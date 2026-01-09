@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BridgeBank.Core\BridgeBank.Core.csproj" />
+    <ProjectReference Include="..\..\src\BridgeBank.Parsers\BridgeBank.Parsers.csproj" />
+    <ProjectReference Include="..\..\src\BridgeBank.Generators\BridgeBank.Generators.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
