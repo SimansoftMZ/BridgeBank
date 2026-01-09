@@ -48,7 +48,11 @@ public class LeitorExtratoBCI : LeitorExcelBase
     protected override DateTime ObterData(ExcelWorksheet planilha, int linha)
     {
         var valor = planilha.Cells[linha, ColunaData].Value;
-        return valor is DateTime data ? data : DateTime.Parse(valor?.ToString() ?? string.Empty);
+        if (valor is DateTime data)
+            return data;
+        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
+            return dataParsed;
+        return DateTime.MinValue;
     }
 
     protected override decimal ObterValor(ExcelWorksheet planilha, int linha)
@@ -89,13 +93,21 @@ public class LeitorExtratoBCI : LeitorExcelBase
     private DateTime ObterDataInicio(ExcelWorksheet planilha)
     {
         var valor = planilha.Cells[5, 2].Value;
-        return valor is DateTime data ? data : DateTime.Parse(valor?.ToString() ?? DateTime.Now.ToString());
+        if (valor is DateTime data)
+            return data;
+        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
+            return dataParsed;
+        return DateTime.Now;
     }
 
     private DateTime ObterDataFim(ExcelWorksheet planilha)
     {
         var valor = planilha.Cells[6, 2].Value;
-        return valor is DateTime data ? data : DateTime.Parse(valor?.ToString() ?? DateTime.Now.ToString());
+        if (valor is DateTime data)
+            return data;
+        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
+            return dataParsed;
+        return DateTime.Now;
     }
 
     private decimal ObterSaldoInicial(ExcelWorksheet planilha)

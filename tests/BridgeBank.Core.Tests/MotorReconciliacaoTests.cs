@@ -42,7 +42,7 @@ public class MotorReconciliacaoTests
         Assert.Single(resultados);
         Assert.Equal("T1", resultados[0].Transacao.Id);
         Assert.NotNull(resultados[0].LancamentoCorrespondente);
-        Assert.Equal("L1", resultados[0].LancamentoCorrespondente.Id);
+        Assert.Equal("L1", resultados[0].LancamentoCorrespondente!.Id);
         Assert.Equal(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
     }
 
