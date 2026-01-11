@@ -10,7 +10,7 @@ Se encontrar um bug, por favor abra uma [issue](https://github.com/SimansoftMZ/B
 
 - Descrição clara do problema
 - Passos para reproduzir
-- Comportamento esperado vs. atual
+- Comportamento esperado vs. actual
 - Versão da biblioteca
 - Ambiente (.NET version, OS)
 
@@ -74,7 +74,7 @@ Sugestões são bem-vindas! Abra uma issue com:
 
 - **Projetos e Namespaces**: PascalCase em inglês
   ```csharp
-  namespace BridgeBank.Core.Models
+  namespace Simansoft.BridgeBank.Core.Models
   ```
 
 ### Documentação

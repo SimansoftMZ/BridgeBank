@@ -8,11 +8,40 @@
     <PackageReference Include="EPPlus" Version="8.4.0" />
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.7.12" />
   </ItemGroup>
-
+  
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Simansoft.BridgeBank.Parsers</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Authors>Simansoft</Authors>
+    <Title>Simansoft.BridgeBank.Parsers</Title>
+    <PackageId>Simansoft.BridgeBank.Parsers</PackageId>
+    <PackageProjectUrl>https://github.com/SimansoftMZ/BridgeBank</PackageProjectUrl>
+    <AssemblyName>Simansoft.BridgeBank.Parsers</AssemblyName>
+    <RepositoryUrl>https://github.com/SimansoftMZ/BridgeBank</RepositoryUrl>
+	<Version Condition="'$(PackageVersion)' != ''">$(PackageVersion)</Version>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+
+	<IsPackable>true</IsPackable>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
