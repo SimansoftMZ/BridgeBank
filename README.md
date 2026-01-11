@@ -1,6 +1,6 @@
-# BridgeBank
+# Simansoft.BridgeBank
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-purple)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-purple)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 BridgeBank é uma biblioteca .NET open-source que resolve o problema de reconciliação bancária em sistemas ERP. Oferece correspondência inteligente de transações, classificação automática de taxas e comissões, e geração de ficheiros de pagamento em formatos específicos de cada banco. Suporta bancos moçambicanos e formatos internacionais.
@@ -29,9 +29,9 @@ BridgeBank é uma biblioteca .NET open-source que resolve o problema de reconcil
 ### Via NuGet (quando publicado)
 
 ```bash
-dotnet add package BridgeBank.Core
-dotnet add package BridgeBank.Parsers
-dotnet add package BridgeBank.Generators
+dotnet add package Simansoft.BridgeBank.Core
+dotnet add package Simansoft.BridgeBank.Parsers
+dotnet add package Simansoft.BridgeBank.Generators
 ```
 
 ### Compilar do Código Fonte
@@ -47,8 +47,8 @@ dotnet build
 ### Reconciliação Básica
 
 ```csharp
-using BridgeBank.Core;
-using BridgeBank.Core.Strategies;
+using Simansoft.BridgeBank.Core;
+using Simansoft.BridgeBank.Core.Strategies;
 
 // Criar motor de reconciliação
 var motor = new MotorReconciliacao();
@@ -76,7 +76,7 @@ foreach (var resultado in resultados)
 ### Leitura de Extracto Bancário
 
 ```csharp
-using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Parsers.Bancos;
 
 // Ler extrato do BCI
 var leitor = new LeitorExtratoBCI();
@@ -91,8 +91,8 @@ Console.WriteLine($"Transações: {extrato.Transacoes.Count}");
 ### Geração de Ficheiro de Pagamento
 
 ```csharp
-using BridgeBank.Generators.Bancos;
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Bancos;
+using Simansoft.BridgeBank.Generators.Models;
 
 // Criar lista de pagamentos
 var pagamentos = new List<Pagamento>
@@ -208,7 +208,7 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ## 👥 Autores
 
-- **Simansoft MZ** - *Desenvolvimento inicial*
+- **Simansoft** - *Desenvolvimento inicial*
 
 ## 🙏 Agradecimentos
 
