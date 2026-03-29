@@ -25,7 +25,7 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
         ];
 
         // Act
-        var resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
+        ResultadoCorrespondencia? resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
 
         // Assert
         Assert.NotNull(resultado);

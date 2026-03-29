@@ -23,25 +23,23 @@ public class MotorReconciliacao : IMotorReconciliacao
         IEnumerable<Transacao> transacoes,
         IEnumerable<LancamentoERP> lancamentos)
     {
-        var lancamentosDisponiveis = lancamentos.ToList();
-        var resultados = new List<ResultadoReconciliacao>();
+        List<LancamentoERP> lancamentosDisponiveis = [.. lancamentos];
+        List<ResultadoReconciliacao> resultados = [];
 
-        var estrategiasOrdenadas = _estrategias
-            .OrderByDescending(e => e.Prioridade)
-            .ToList();
+        List<IEstrategiaCorrespondencia> estrategiasOrdenadas = [.. _estrategias.OrderByDescending(e => e.Prioridade)];
 
-        foreach (var transacao in transacoes)
+        foreach (Transacao transacao in transacoes)
         {
-            var resultado = new ResultadoReconciliacao
+            ResultadoReconciliacao resultado = new()
             {
                 Transacao = transacao,
                 TipoCorrespondencia = TipoCorrespondencia.Nenhuma,
                 NivelConfianca = 0
             };
 
-            foreach (var estrategia in estrategiasOrdenadas)
+            foreach (IEstrategiaCorrespondencia estrategia in estrategiasOrdenadas)
             {
-                var correspondencia = estrategia.TentarCorrespondencia(
+                ResultadoCorrespondencia? correspondencia = estrategia.TentarCorrespondencia(
                     transacao,
                     lancamentosDisponiveis);
 

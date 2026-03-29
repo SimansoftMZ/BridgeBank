@@ -19,26 +19,26 @@ public class EstrategiaCorrespondenciaPorValorEData(
         Transacao transacao,
         IEnumerable<LancamentoERP> lancamentos)
     {
-        var lancamentosCompativeis = lancamentos.Where(l =>
+        List<LancamentoERP> lancamentosCompativeis = [.. lancamentos.Where(l =>
         {
-            var diferencaDias = Math.Abs((l.Data - transacao.Data).Days);
-            var diferencaValor = Math.Abs(l.Valor - transacao.Valor);
+            int diferencaDias = Math.Abs((l.Data - transacao.Data).Days);
+            decimal diferencaValor = Math.Abs(l.Valor - transacao.Valor);
 
             return diferencaDias <= _toleranciaDias &&
                    diferencaValor <= _toleranciaValor;
-        }).ToList();
+        })];
 
         if (lancamentosCompativeis.Count == 0)
             return null;
 
-        var melhorLancamento = lancamentosCompativeis.OrderBy(l =>
+        LancamentoERP melhorLancamento = lancamentosCompativeis.OrderBy(l =>
             Math.Abs((l.Data - transacao.Data).Days) +
             (double)Math.Abs(l.Valor - transacao.Valor)).First();
 
-        var diferencaDias = Math.Abs((melhorLancamento.Data - transacao.Data).Days);
-        var diferencaValor = Math.Abs(melhorLancamento.Valor - transacao.Valor);
+        int diferencaDias = Math.Abs((melhorLancamento.Data - transacao.Data).Days);
+        decimal diferencaValor = Math.Abs(melhorLancamento.Valor - transacao.Valor);
 
-        var nivelConfianca = 1.0 -
+        double nivelConfianca = 1.0 -
             (diferencaDias / (double)(_toleranciaDias + 1) * 0.3) -
             ((double)diferencaValor / (double)(_toleranciaValor + 0.01m) * 0.2);
 

@@ -19,7 +19,8 @@ public class EstrategiaCorrespondenciaPorDescricao(double limiarSimilaridade = 0
         if (string.IsNullOrWhiteSpace(transacao.Descricao))
             return null;
 
-        var lancamentosSimilares = lancamentos
+
+        if (lancamentos
             .Where(l => !string.IsNullOrWhiteSpace(l.Descricao))
             .Select(l => new
             {
@@ -30,21 +31,51 @@ public class EstrategiaCorrespondenciaPorDescricao(double limiarSimilaridade = 0
             })
             .Where(x => x.Similaridade >= _limiarSimilaridade)
             .OrderByDescending(x => x.Similaridade)
-            .ToList();
-
-        if (lancamentosSimilares.Count == 0)
+            .ToList().Count == 0)
             return null;
 
-        var melhor = lancamentosSimilares.First();
 
         return new ResultadoCorrespondencia
         {
-            Lancamento = melhor.Lancamento,
+            Lancamento = lancamentos
+            .Where(l => !string.IsNullOrWhiteSpace(l.Descricao))
+            .Select(l => new
+            {
+                Lancamento = l,
+                Similaridade = CalcularSimilaridade(
+                    transacao.Descricao,
+                    l.Descricao)
+            })
+            .Where(x => x.Similaridade >= _limiarSimilaridade)
+            .OrderByDescending(x => x.Similaridade)
+            .ToList().First().Lancamento,
             Tipo = TipoCorrespondencia.PorDescricao,
-            NivelConfianca = melhor.Similaridade * 0.9,
+            NivelConfianca = lancamentos
+            .Where(l => !string.IsNullOrWhiteSpace(l.Descricao))
+            .Select(l => new
+            {
+                Lancamento = l,
+                Similaridade = CalcularSimilaridade(
+                    transacao.Descricao,
+                    l.Descricao)
+            })
+            .Where(x => x.Similaridade >= _limiarSimilaridade)
+            .OrderByDescending(x => x.Similaridade)
+            .ToList().First().Similaridade * 0.9,
             Observacoes =
             [
-                $"Correspondência por descrição (similaridade: {melhor.Similaridade:P0})"
+                $"Correspondência por descrição (similaridade: {lancamentos
+            .Where(l => !string.IsNullOrWhiteSpace(l.Descricao))
+            .Select(l => new
+            {
+                Lancamento = l,
+                Similaridade = CalcularSimilaridade(
+                    transacao.Descricao,
+                    l.Descricao)
+            })
+            .Where(x => x.Similaridade >= _limiarSimilaridade)
+            .OrderByDescending(x => x.Similaridade)
+            .ToList().First().Similaridade:P0})"
             ]
         };
     }
@@ -60,11 +91,11 @@ public class EstrategiaCorrespondenciaPorDescricao(double limiarSimilaridade = 0
         if (texto1 == texto2)
             return 1.0;
 
-        var palavras1 = texto1.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToHashSet();
-        var palavras2 = texto2.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+        HashSet<string> palavras1 = [.. texto1.Split(' ', StringSplitOptions.RemoveEmptyEntries)];
+        HashSet<string> palavras2 = [.. texto2.Split(' ', StringSplitOptions.RemoveEmptyEntries)];
 
-        var intersecao = palavras1.Intersect(palavras2).Count();
-        var uniao = palavras1.Union(palavras2).Count();
+        int intersecao = palavras1.Intersect(palavras2).Count();
+        int uniao = palavras1.Union(palavras2).Count();
 
         return uniao > 0 ? (double)intersecao / uniao : 0;
     }

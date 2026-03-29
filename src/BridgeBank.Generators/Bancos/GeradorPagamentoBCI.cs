@@ -34,7 +34,7 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
 
     private static string GerarCabecalho(DateTime dataGeracao, int totalPagamentos)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.Append('0');                                              // Tipo de registro
         sb.Append(dataGeracao.ToString("yyyyMMdd").PadRight(8));    // Data de geração
         sb.Append(totalPagamentos.ToString().PadLeft(6, '0'));      // Total de pagamentos
@@ -43,9 +43,9 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
         return sb.ToString();
     }
 
-    private string GerarLinhaPagamento(Pagamento pagamento)
+    private static string GerarLinhaPagamento(Pagamento pagamento)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.Append('1');                                                      // Tipo de registro
         sb.Append(pagamento.DataPagamento.ToString("yyyyMMdd").PadRight(8)); // Data pagamento
         sb.Append(FormatarValor(pagamento.Valor).PadLeft(15, '0'));         // Valor
@@ -56,10 +56,10 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
         return sb.ToString();
     }
 
-    private string GerarRodape(IEnumerable<Pagamento> pagamentos)
+    private static string GerarRodape(IEnumerable<Pagamento> pagamentos)
     {
-        var totalValor = pagamentos.Sum(p => p.Valor);
-        var sb = new StringBuilder();
+        decimal totalValor = pagamentos.Sum(p => p.Valor);
+        StringBuilder sb = new();
         sb.Append('9');                                              // Tipo de registro
         sb.Append(pagamentos.Count().ToString().PadLeft(6, '0'));   // Total de registros
         sb.Append(FormatarValor(totalValor).PadLeft(15, '0'));      // Valor total

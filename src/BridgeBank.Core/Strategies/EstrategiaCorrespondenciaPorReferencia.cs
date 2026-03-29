@@ -17,7 +17,7 @@ public class EstrategiaCorrespondenciaPorReferencia : IEstrategiaCorrespondencia
         if (string.IsNullOrWhiteSpace(transacao.Referencia))
             return null;
 
-        var lancamento = lancamentos.FirstOrDefault(l =>
+        LancamentoERP? lancamento = lancamentos.FirstOrDefault(l =>
             !string.IsNullOrWhiteSpace(l.Referencia) &&
             l.Referencia.Equals(transacao.Referencia, StringComparison.OrdinalIgnoreCase));
 
