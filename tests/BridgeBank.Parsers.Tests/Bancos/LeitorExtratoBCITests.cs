@@ -1,4 +1,4 @@
-using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Parsers.Bancos;
 using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Tests.Bancos;
@@ -19,8 +19,8 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("BCI", extrato.Banco);
         Assert.NotEmpty(extrato.NumeroConta);
@@ -32,8 +32,8 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("1242812610003", extrato.NumeroConta);
     }
@@ -43,8 +43,8 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(200.00m, extrato.SaldoInicial);
     }
@@ -54,8 +54,8 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.NotEmpty(extrato.Transacoes);
         Assert.All(extrato.Transacoes, t =>
@@ -72,10 +72,10 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var primeira = extrato.Transacoes[0];
+        Transacao primeira = extrato.Transacoes[0];
         Assert.Equal(new DateTime(2025, 12, 1), primeira.Data);
         Assert.Equal(4400.00m, primeira.Valor);
         Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
@@ -87,11 +87,11 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         // A segunda transacção é uma comissão (débito)
-        var comissao = extrato.Transacoes[1];
+        Transacao comissao = extrato.Transacoes[1];
         Assert.Equal(TipoTransacao.Debito, comissao.Tipo);
         Assert.Contains("Comissão", comissao.Descricao);
     }
@@ -101,8 +101,8 @@ public class LeitorExtratoBCITests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
 
-        var leitor = new LeitorExtratoBCI();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(2025, extrato.DataInicio.Year);
         Assert.Equal(12, extrato.DataInicio.Month);
@@ -112,7 +112,7 @@ public class LeitorExtratoBCITests
     [Fact]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
-        var leitor = new LeitorExtratoBCI();
+        LeitorExtratoBCI leitor = new();
         Assert.True(leitor.SuportaArquivo("extracto.xls"));
         Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
     }
@@ -120,7 +120,7 @@ public class LeitorExtratoBCITests
     [Fact]
     public void SuportaArquivo_ExtensaoCsv_RetornaFalse()
     {
-        var leitor = new LeitorExtratoBCI();
+        LeitorExtratoBCI leitor = new();
         Assert.False(leitor.SuportaArquivo("extracto.csv"));
         Assert.False(leitor.SuportaArquivo("extracto.pdf"));
     }

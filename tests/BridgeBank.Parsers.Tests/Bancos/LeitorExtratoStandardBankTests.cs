@@ -1,4 +1,4 @@
-using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Parsers.Bancos;
 using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Tests.Bancos;
@@ -19,8 +19,8 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("Standard Bank", extrato.Banco);
         Assert.NotEmpty(extrato.NumeroConta);
@@ -31,8 +31,8 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Contains("1046229761009", extrato.NumeroConta);
     }
@@ -42,8 +42,8 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.NotEmpty(extrato.Transacoes);
         Assert.All(extrato.Transacoes, t =>
@@ -60,10 +60,10 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var primeira = extrato.Transacoes[0];
+        Transacao primeira = extrato.Transacoes[0];
         Assert.Equal(new DateTime(2025, 12, 15), primeira.Data);
         Assert.Equal(3180.00m, primeira.Valor);
         Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
@@ -76,8 +76,8 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(2025, extrato.DataInicio.Year);
         Assert.Equal(12, extrato.DataInicio.Month);
@@ -89,8 +89,8 @@ public class LeitorExtratoStandardBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Standard Bank não disponível");
 
-        var leitor = new LeitorExtratoStandardBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoStandardBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.DoesNotContain(extrato.Transacoes, t =>
             t.Descricao.Contains("Copyright", StringComparison.OrdinalIgnoreCase));
@@ -99,7 +99,7 @@ public class LeitorExtratoStandardBankTests
     [Fact]
     public void SuportaArquivo_ExtensaoXlsx_RetornaTrue()
     {
-        var leitor = new LeitorExtratoStandardBank();
+        LeitorExtratoStandardBank leitor = new();
         Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }

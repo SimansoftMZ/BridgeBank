@@ -28,11 +28,11 @@ public class LeitorExtratoNedBank : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
-        var ultimaLinha = ObterUltimaLinha(folha);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
+        int ultimaLinha = ObterUltimaLinha(folha);
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "NedBank",
             NumeroConta = ObterNumeroConta(folha),
@@ -42,7 +42,7 @@ public class LeitorExtratoNedBank : LeitorExcelBase
 
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
-            var textoData = ObterTextoCelula(folha, linha, ColunaData);
+            string textoData = ObterTextoCelula(folha, linha, ColunaData);
 
             if (textoData.StartsWith("Saldo", StringComparison.OrdinalIgnoreCase))
             {
@@ -53,7 +53,7 @@ public class LeitorExtratoNedBank : LeitorExcelBase
             if (string.IsNullOrWhiteSpace(textoData))
                 continue;
 
-            var transacao = ExtrairTransacao(folha, linha, textoData);
+            Transacao? transacao = ExtrairTransacao(folha, linha, textoData);
             if (transacao != null)
                 extrato.Transacoes.Add(transacao);
         }
@@ -70,10 +70,10 @@ public class LeitorExtratoNedBank : LeitorExcelBase
     private static Transacao? ExtrairTransacao(ISheet folha, int linha, string textoData)
     {
         if (!DateTime.TryParseExact(textoData, ["dd/MM/yyyy", "dd-MM-yyyy"],
-            CultureInfo.InvariantCulture, DateTimeStyles.None, out var data))
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
             return null;
 
-        var montante = ObterNumericoCelula(folha, linha, ColunaMontante);
+        double montante = ObterNumericoCelula(folha, linha, ColunaMontante);
 
         return new Transacao
         {

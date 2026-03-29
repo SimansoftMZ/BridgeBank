@@ -1,5 +1,5 @@
 using System.Globalization;
-using BridgeBank.Parsers.Util;
+using Simansoft.BridgeBank.Parsers.Util;
 
 namespace BridgeBank.Parsers.Tests;
 
@@ -17,7 +17,7 @@ public class ParseadorNumericoTests
     [InlineData("-0,16", "-0.16")]
     public void ParsearValorMonetario_FormatoPortugues_RetornaValorCorreto(string texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
@@ -27,7 +27,7 @@ public class ParseadorNumericoTests
     [InlineData("8.965.395,17 ", "8965395.17")]
     public void ParsearValorMonetario_ComSufixoMoeda_RetornaValorCorreto(string texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
@@ -37,7 +37,7 @@ public class ParseadorNumericoTests
     [InlineData("1234.56", "1234.56")]
     public void ParsearValorMonetario_FormatoComPontos_RetornaValorCorreto(string texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
@@ -47,7 +47,7 @@ public class ParseadorNumericoTests
     [InlineData("4 400.00", "4400.00")]
     public void ParsearValorMonetario_ComEspacosComoMilhares_RetornaValorCorreto(string texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
@@ -57,7 +57,7 @@ public class ParseadorNumericoTests
     [InlineData("  ", "0")]
     public void ParsearValorMonetario_ValorVazioOuNulo_RetornaZero(string? texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
@@ -66,7 +66,7 @@ public class ParseadorNumericoTests
     [InlineData("1,234.56", "1234.56")]
     public void ParsearValorMonetario_FormatoInternacional_RetornaValorCorreto(string texto, string esperado)
     {
-        var resultado = ParseadorNumerico.ParsearValorMonetario(texto);
+        decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
         Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 }

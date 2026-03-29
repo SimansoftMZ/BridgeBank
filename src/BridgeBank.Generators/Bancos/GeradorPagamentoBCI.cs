@@ -14,14 +14,14 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
 
     public void GerarFicheiro(IEnumerable<Pagamento> pagamentos, string caminhoArquivo)
     {
-        var linhas = new List<string>();
+        List<string> linhas = [];
 
         // Linha de cabeçalho
-        var dataGeracao = DateTime.Now;
+        DateTime dataGeracao = DateTime.Now;
         linhas.Add(GerarCabecalho(dataGeracao, pagamentos.Count()));
 
         // Linhas de pagamento
-        foreach (var pagamento in pagamentos)
+        foreach (Pagamento pagamento in pagamentos)
         {
             linhas.Add(GerarLinhaPagamento(pagamento));
         }

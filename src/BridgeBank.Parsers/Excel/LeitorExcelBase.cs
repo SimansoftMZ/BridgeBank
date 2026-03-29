@@ -12,7 +12,7 @@ public abstract class LeitorExcelBase : ILeitorExtrato
 {
     public virtual bool SuportaArquivo(string caminhoArquivo)
     {
-        var extensao = Path.GetExtension(caminhoArquivo).ToLowerInvariant();
+        string extensao = Path.GetExtension(caminhoArquivo).ToLowerInvariant();
         return extensao == ".xlsx" || extensao == ".xls";
     }
 
@@ -31,10 +31,10 @@ public abstract class LeitorExcelBase : ILeitorExtrato
     /// </summary>
     protected static string ObterTextoCelula(ISheet folha, int linha, int coluna)
     {
-        var row = folha.GetRow(linha);
+        IRow row = folha.GetRow(linha);
         if (row == null) return string.Empty;
 
-        var cell = row.GetCell(coluna);
+        ICell cell = row.GetCell(coluna);
         if (cell == null) return string.Empty;
 
         return cell.CellType switch
@@ -54,17 +54,17 @@ public abstract class LeitorExcelBase : ILeitorExtrato
     /// </summary>
     protected static double ObterNumericoCelula(ISheet folha, int linha, int coluna)
     {
-        var row = folha.GetRow(linha);
+        IRow row = folha.GetRow(linha);
         if (row == null) return 0;
 
-        var cell = row.GetCell(coluna);
+        ICell cell = row.GetCell(coluna);
         if (cell == null) return 0;
 
         return cell.CellType switch
         {
             CellType.Numeric => cell.NumericCellValue,
             CellType.String => double.TryParse(cell.StringCellValue,
-                NumberStyles.Any, CultureInfo.InvariantCulture, out var val) ? val : 0,
+                NumberStyles.Any, CultureInfo.InvariantCulture, out double val) ? val : 0,
             CellType.Formula => cell.CachedFormulaResultType == CellType.Numeric
                 ? cell.NumericCellValue : 0,
             _ => 0
@@ -76,10 +76,10 @@ public abstract class LeitorExcelBase : ILeitorExtrato
     /// </summary>
     protected static DateTime? ObterDataCelula(ISheet folha, int linha, int coluna)
     {
-        var row = folha.GetRow(linha);
+        IRow row = folha.GetRow(linha);
         if (row == null) return null;
 
-        var cell = row.GetCell(coluna);
+        ICell cell = row.GetCell(coluna);
         if (cell == null) return null;
 
         if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
@@ -93,10 +93,10 @@ public abstract class LeitorExcelBase : ILeitorExtrato
     /// </summary>
     protected static bool CelulaVazia(ISheet folha, int linha, int coluna)
     {
-        var row = folha.GetRow(linha);
+        IRow row = folha.GetRow(linha);
         if (row == null) return true;
 
-        var cell = row.GetCell(coluna);
+        ICell cell = row.GetCell(coluna);
         if (cell == null) return true;
 
         return cell.CellType == CellType.Blank

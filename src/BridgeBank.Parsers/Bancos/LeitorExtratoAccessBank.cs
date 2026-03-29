@@ -34,12 +34,12 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
 
-        var (dataInicio, dataFim) = ExtrairDatas(folha);
+        (DateTime dataInicio, DateTime dataFim) = ExtrairDatas(folha);
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new ExtratoBancario
         {
             Banco = "Access Bank",
             NumeroConta = ObterTextoCelula(folha, LinhaMetaConta, 7),
@@ -50,13 +50,13 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
             Transacoes = []
         };
 
-        var ultimaLinha = ObterUltimaLinha(folha);
+        int ultimaLinha = ObterUltimaLinha(folha);
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
             if (CelulaVazia(folha, linha, ColunaData) && CelulaVazia(folha, linha, ColunaDescricao))
                 break;
 
-            var transacao = ExtrairTransacao(folha, linha);
+            Transacao? transacao = ExtrairTransacao(folha, linha);
             if (transacao != null)
                 extrato.Transacoes.Add(transacao);
         }
@@ -66,12 +66,12 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
 
     private static Transacao? ExtrairTransacao(ISheet folha, int linha)
     {
-        var textoData = ObterTextoCelula(folha, linha, ColunaData);
-        if (!TryParseData(textoData, out var data))
+        string textoData = ObterTextoCelula(folha, linha, ColunaData);
+        if (!TryParseData(textoData, out DateTime data))
             return null;
 
-        var textoValor = ObterTextoCelula(folha, linha, ColunaValor);
-        var valor = ParseadorNumerico.ParsearValorMonetario(textoValor);
+        string textoValor = ObterTextoCelula(folha, linha, ColunaValor);
+        decimal valor = ParseadorNumerico.ParsearValorMonetario(textoValor);
 
         return new Transacao
         {
@@ -86,14 +86,14 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
 
     private static (DateTime dataInicio, DateTime dataFim) ExtrairDatas(ISheet folha)
     {
-        var texto = ObterTextoCelula(folha, LinhaMetaDatas, 6);
-        var match = DatasRegex().Match(texto);
+        string texto = ObterTextoCelula(folha, LinhaMetaDatas, 6);
+        Match match = DatasRegex().Match(texto);
         if (match.Success)
         {
             DateTime.TryParseExact(match.Groups["inicio"].Value, "dd-MM-yyyy",
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicio);
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime inicio);
             DateTime.TryParseExact(match.Groups["fim"].Value, "dd-MM-yyyy",
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out var fim);
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fim);
             return (inicio, fim);
         }
         return (DateTime.MinValue, DateTime.MinValue);

@@ -1,4 +1,4 @@
-using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Parsers.Bancos;
 using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Tests.Bancos;
@@ -19,8 +19,8 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("Access Bank", extrato.Banco);
         Assert.NotEmpty(extrato.NumeroConta);
@@ -31,8 +31,8 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("00101010001133", extrato.NumeroConta);
     }
@@ -42,8 +42,8 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(new DateTime(2025, 12, 1), extrato.DataInicio);
         Assert.Equal(new DateTime(2025, 12, 17), extrato.DataFim);
@@ -54,8 +54,8 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(5488800.44m, extrato.SaldoInicial);
         Assert.Equal(5299234.28m, extrato.SaldoFinal);
@@ -66,8 +66,8 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.NotEmpty(extrato.Transacoes);
         Assert.All(extrato.Transacoes, t =>
@@ -84,10 +84,10 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var primeira = extrato.Transacoes[0];
+        Transacao primeira = extrato.Transacoes[0];
         Assert.Equal(new DateTime(2025, 12, 1), primeira.Data);
         Assert.Equal(4400.00m, primeira.Valor);
         Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
@@ -99,10 +99,10 @@ public class LeitorExtratoAccessBankTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
 
-        var leitor = new LeitorExtratoAccessBank();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoAccessBank leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
+        List<Transacao> debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
         Assert.NotEmpty(debitos);
         Assert.All(debitos, d => Assert.Contains("TRANSFERENCIA", d.Descricao));
     }
@@ -110,7 +110,7 @@ public class LeitorExtratoAccessBankTests
     [Fact]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
-        var leitor = new LeitorExtratoAccessBank();
+        LeitorExtratoAccessBank leitor = new();
         Assert.True(leitor.SuportaArquivo("extracto.xls"));
         Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
     }

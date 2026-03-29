@@ -30,10 +30,10 @@ public class LeitorExtratoBCI : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "BCI",
             NumeroConta = ObterTextoCelula(folha, LinhaConta, 1),
@@ -41,13 +41,13 @@ public class LeitorExtratoBCI : LeitorExcelBase
             Transacoes = []
         };
 
-        var ultimaLinha = ObterUltimaLinha(folha);
+        int ultimaLinha = ObterUltimaLinha(folha);
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
             if (CelulaVazia(folha, linha, ColunaDataMov) && CelulaVazia(folha, linha, ColunaDescricao))
                 break;
 
-            var transacao = ExtrairTransacao(folha, linha);
+            Transacao? transacao = ExtrairTransacao(folha, linha);
             if (transacao != null)
                 extrato.Transacoes.Add(transacao);
         }
@@ -65,12 +65,12 @@ public class LeitorExtratoBCI : LeitorExcelBase
 
     private static Transacao? ExtrairTransacao(ISheet folha, int linha)
     {
-        var textoData = ObterTextoCelula(folha, linha, ColunaDataMov);
-        if (!TryParseData(textoData, out var data))
+        string textoData = ObterTextoCelula(folha, linha, ColunaDataMov);
+        if (!TryParseData(textoData, out DateTime data))
             return null;
 
-        var textoValor = ObterTextoCelula(folha, linha, ColunaValor);
-        var valor = ParseadorNumerico.ParsearValorMonetario(textoValor);
+        string textoValor = ObterTextoCelula(folha, linha, ColunaValor);
+        decimal valor = ParseadorNumerico.ParsearValorMonetario(textoValor);
 
         return new Transacao
         {
@@ -88,16 +88,16 @@ public class LeitorExtratoBCI : LeitorExcelBase
     {
         for (int i = ultimaLinha; i >= LinhaInicioTransacoes; i--)
         {
-            var texto = ObterTextoCelula(folha, i, ColunaSaldo);
+            string texto = ObterTextoCelula(folha, i, ColunaSaldo);
             if (!string.IsNullOrEmpty(texto))
             {
-                var saldo = ParseadorNumerico.ParsearValorMonetario(texto);
+                decimal saldo = ParseadorNumerico.ParsearValorMonetario(texto);
                 if (saldo != 0) return saldo;
             }
         }
 
-        var saldoCalculado = saldoInicial;
-        foreach (var t in transacoes)
+        decimal saldoCalculado = saldoInicial;
+        foreach (Transacao t in transacoes)
             saldoCalculado += t.Tipo == TipoTransacao.Credito ? t.Valor : -t.Valor;
         return saldoCalculado;
     }

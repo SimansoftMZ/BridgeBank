@@ -14,14 +14,14 @@ public class GeradorPagamentoMillenniumBIM : IGeradorFicheiroPagamento
 
     public void GerarFicheiro(IEnumerable<Pagamento> pagamentos, string caminhoArquivo)
     {
-        var linhas = new List<string>
-        {
+        List<string> linhas =
+        [
             // Cabeçalho
             "Data;Beneficiario;Conta;Banco;Valor;Referencia;Descricao"
-        };
+        ];
 
         // Pagamentos
-        foreach (var pagamento in pagamentos)
+        foreach (Pagamento pagamento in pagamentos)
         {
             linhas.Add(GerarLinhaPagamento(pagamento));
         }

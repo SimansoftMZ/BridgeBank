@@ -14,7 +14,7 @@ public class GeradorPagamentoStandardBank : IGeradorFicheiroPagamento
 
     public void GerarFicheiro(IEnumerable<Pagamento> pagamentos, string caminhoArquivo)
     {
-        var xml = new StringBuilder();
+        StringBuilder xml = new();
         xml.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         xml.AppendLine("<LotePagamentos>");
         xml.AppendLine($"  <DataGeracao>{DateTime.Now:yyyy-MM-dd HH:mm:ss}</DataGeracao>");
@@ -22,7 +22,7 @@ public class GeradorPagamentoStandardBank : IGeradorFicheiroPagamento
         xml.AppendLine($"  <ValorTotal>{pagamentos.Sum(p => p.Valor):F2}</ValorTotal>");
         xml.AppendLine("  <Pagamentos>");
 
-        foreach (var pagamento in pagamentos)
+        foreach (Pagamento pagamento in pagamentos)
         {
             xml.AppendLine("    <Pagamento>");
             xml.AppendLine($"      <Id>{EscaparXml(pagamento.Id)}</Id>");

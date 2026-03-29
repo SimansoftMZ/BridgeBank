@@ -21,7 +21,7 @@ public static partial class ParseadorNumerico
         if (string.IsNullOrWhiteSpace(texto))
             return 0;
 
-        var limpo = texto.Trim();
+        string limpo = texto.Trim();
 
         // Remover sufixo de moeda (ex: " MZN", " USD")
         limpo = SufixoMoedaRegex().Replace(limpo, "").Trim();
@@ -36,8 +36,8 @@ public static partial class ParseadorNumerico
         if (string.IsNullOrEmpty(limpo))
             return 0;
 
-        var lastComma = limpo.LastIndexOf(',');
-        var lastDot = limpo.LastIndexOf('.');
+        int lastComma = limpo.LastIndexOf(',');
+        int lastDot = limpo.LastIndexOf('.');
 
         if (lastComma > lastDot)
         {
@@ -54,18 +54,18 @@ public static partial class ParseadorNumerico
         else if (lastDot >= 0 && lastComma < 0)
         {
             // Apenas pontos - verificar se o último ponto é decimal
-            var dotCount = limpo.Count(c => c == '.');
+            int dotCount = limpo.Count(c => c == '.');
             if (dotCount > 1)
             {
                 // Múltiplos pontos: todos excepto o último são milhares
                 // Ex: "3.371.027.03" → "3371027.03"
-                var lastDotIdx = limpo.LastIndexOf('.');
+                int lastDotIdx = limpo.LastIndexOf('.');
                 limpo = limpo[..lastDotIdx].Replace(".", "") + "." + limpo[(lastDotIdx + 1)..];
             }
             // Ponto único: tratar como decimal (ex: "1234.56")
         }
 
-        return decimal.TryParse(limpo, NumberStyles.Any, InvariantCulture, out var resultado)
+        return decimal.TryParse(limpo, NumberStyles.Any, InvariantCulture, out decimal resultado)
             ? resultado
             : 0;
     }

@@ -34,19 +34,19 @@ public class LeitorExtratoMPesa : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
-        var ultimaLinha = ObterUltimaLinha(folha);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
+        int ultimaLinha = ObterUltimaLinha(folha);
 
-        var (dataInicio, dataFim) = ExtrairPeriodo(folha);
+        (DateTime dataInicio, DateTime dataFim) = ExtrairPeriodo(folha);
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "M-Pesa",
             NumeroConta = ObterTextoCelula(folha, LinhaMetaCodigo, 1),
             DataInicio = dataInicio,
             DataFim = dataFim,
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
@@ -54,17 +54,16 @@ public class LeitorExtratoMPesa : LeitorExcelBase
             if (CelulaVazia(folha, linha, ColunaRecibo))
                 continue;
 
-            var status = ObterTextoCelula(folha, linha, ColunaStatus);
+            string status = ObterTextoCelula(folha, linha, ColunaStatus);
             if (!status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            var paidIn = ObterNumericoCelula(folha, linha, ColunaPaidIn);
-            var withdrawn = ObterNumericoCelula(folha, linha, ColunaWithdrawn);
-
+            double paidIn = ObterNumericoCelula(folha, linha, ColunaPaidIn);
+            double withdrawn = ObterNumericoCelula(folha, linha, ColunaWithdrawn);
             if (paidIn == 0 && withdrawn == 0)
                 continue;
 
-            var transacao = ExtrairTransacao(folha, linha, paidIn, withdrawn);
+            Transacao? transacao = ExtrairTransacao(folha, linha, paidIn, withdrawn);
             if (transacao != null)
                 extrato.Transacoes.Add(transacao);
         }
@@ -80,12 +79,12 @@ public class LeitorExtratoMPesa : LeitorExcelBase
 
     private static Transacao? ExtrairTransacao(ISheet folha, int linha, double paidIn, double withdrawn)
     {
-        var textoData = ObterTextoCelula(folha, linha, ColunaDataConclusao);
-        if (!TryParseData(textoData, out var data))
+        string textoData = ObterTextoCelula(folha, linha, ColunaDataConclusao);
+        if (!TryParseData(textoData, out DateTime data))
             return null;
 
-        var isCredito = paidIn > 0;
-        var valor = isCredito ? paidIn : Math.Abs(withdrawn);
+        bool isCredito = paidIn > 0;
+        double valor = isCredito ? paidIn : Math.Abs(withdrawn);
 
         return new Transacao
         {
@@ -101,11 +100,11 @@ public class LeitorExtratoMPesa : LeitorExcelBase
 
     private static (DateTime inicio, DateTime fim) ExtrairPeriodo(ISheet folha)
     {
-        var textoInicio = ObterTextoCelula(folha, LinhaMetaPeriodo, 2);
-        var textoFim = ObterTextoCelula(folha, LinhaMetaPeriodo, 4);
+        string textoInicio = ObterTextoCelula(folha, LinhaMetaPeriodo, 2);
+        string textoFim = ObterTextoCelula(folha, LinhaMetaPeriodo, 4);
 
-        TryParseData(textoInicio, out var inicio);
-        TryParseData(textoFim, out var fim);
+        _ = TryParseData(textoInicio, out DateTime inicio);
+        _ = TryParseData(textoFim, out DateTime fim);
         return (inicio, fim);
     }
 
@@ -113,7 +112,7 @@ public class LeitorExtratoMPesa : LeitorExcelBase
     {
         for (int i = LinhaInicioTransacoes; i <= ultimaLinha; i++)
         {
-            var saldo = ObterNumericoCelula(folha, i, ColunaSaldo);
+            double saldo = ObterNumericoCelula(folha, i, ColunaSaldo);
             if (saldo != 0) return (decimal)saldo;
         }
         return 0;
@@ -123,7 +122,7 @@ public class LeitorExtratoMPesa : LeitorExcelBase
     {
         for (int i = ultimaLinha; i >= LinhaInicioTransacoes; i--)
         {
-            var saldo = ObterNumericoCelula(folha, i, ColunaSaldo);
+            double saldo = ObterNumericoCelula(folha, i, ColunaSaldo);
             if (saldo != 0) return (decimal)saldo;
         }
         return 0;

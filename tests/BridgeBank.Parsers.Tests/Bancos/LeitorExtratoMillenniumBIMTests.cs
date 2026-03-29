@@ -1,4 +1,4 @@
-using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Parsers.Bancos;
 using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Tests.Bancos;
@@ -19,8 +19,8 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("Millennium BIM", extrato.Banco);
         Assert.NotEmpty(extrato.NumeroConta);
@@ -31,8 +31,8 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal("125986123", extrato.NumeroConta);
     }
@@ -42,8 +42,8 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(new DateTime(2025, 12, 1), extrato.DataInicio);
         Assert.Equal(new DateTime(2025, 12, 17), extrato.DataFim);
@@ -54,8 +54,8 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.Equal(8965395.17m, extrato.SaldoInicial);
         Assert.Equal(3371027.03m, extrato.SaldoFinal);
@@ -66,8 +66,8 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.NotEmpty(extrato.Transacoes);
         Assert.All(extrato.Transacoes, t =>
@@ -83,10 +83,10 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var primeira = extrato.Transacoes[0];
+        Transacao primeira = extrato.Transacoes[0];
         Assert.Equal(new DateTime(2025, 12, 16), primeira.Data);
         Assert.Equal(132829.99m, primeira.Valor);
         Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
@@ -98,17 +98,17 @@ public class LeitorExtratoMillenniumBIMTests
     {
         Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Millennium BIM não disponível");
 
-        var leitor = new LeitorExtratoMillenniumBIM();
-        var extrato = leitor.LerExtrato(CaminhoFicheiro);
+        LeitorExtratoMillenniumBIM leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        var debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
+        List<Transacao> debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
         Assert.NotEmpty(debitos);
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXlsx_RetornaTrue()
     {
-        var leitor = new LeitorExtratoMillenniumBIM();
+        LeitorExtratoMillenniumBIM leitor = new();
         Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }
