@@ -39,7 +39,7 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
 
         (DateTime dataInicio, DateTime dataFim) = ExtrairDatas(folha);
 
-        ExtratoBancario extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "Access Bank",
             NumeroConta = ObterTextoCelula(folha, LinhaMetaConta, 7),
