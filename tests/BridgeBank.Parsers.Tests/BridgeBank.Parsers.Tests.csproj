@@ -10,16 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TestData\Extractos\Access Bank.xls" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="TestData\Extractos\Access Bank.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BridgeBank.Parsers\BridgeBank.Parsers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestData\Extractos\" />
   </ItemGroup>
 
 </Project>
