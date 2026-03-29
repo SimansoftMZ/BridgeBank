@@ -87,7 +87,7 @@ public class LeitorExtratoNedBankTests
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        List<Transacao> debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
+        List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
         Assert.NotEmpty(debitos);
     }
 

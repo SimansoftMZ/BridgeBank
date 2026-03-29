@@ -102,7 +102,7 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        List<Transacao> debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
+        List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
         Assert.NotEmpty(debitos);
         Assert.All(debitos, d => Assert.Contains("TRANSFERENCIA", d.Descricao));
     }
