@@ -23,8 +23,7 @@ public abstract class LeitorExcelBase : ILeitorExtrato
     /// </summary>
     protected static IWorkbook AbrirFicheiro(string caminhoArquivo)
     {
-        using var stream = File.Open(caminhoArquivo, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return WorkbookFactory.Create(stream);
+        return WorkbookFactory.Create(caminhoArquivo);
     }
 
     /// <summary>

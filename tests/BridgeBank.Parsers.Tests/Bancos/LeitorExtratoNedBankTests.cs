@@ -5,11 +5,12 @@ namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
 /// Testes de integração para o leitor de extratos do NedBank.
-/// Requer o ficheiro de exemplo em Extractos/NedBank.xlsx.
+/// Requer o ficheiro de exemplo em TestData/Extractos/NedBank.xlsx.
 /// </summary>
 public class LeitorExtratoNedBankTests
 {
-    private const string CaminhoFicheiro = @"C:\Users\alber\OneDrive\Ambiente de Trabalho\Extractos\NedBank.xlsx";
+    private static readonly string CaminhoFicheiro =
+        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "NedBank.xlsx");
 
     private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
 

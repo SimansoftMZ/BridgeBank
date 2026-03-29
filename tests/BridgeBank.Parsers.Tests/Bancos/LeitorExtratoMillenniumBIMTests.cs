@@ -5,11 +5,12 @@ namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
 /// Testes de integração para o leitor de extratos do Millennium BIM.
-/// Requer o ficheiro de exemplo em Extractos/Millennium BIM.xlsx.
+/// Requer o ficheiro de exemplo em TestData/Extractos/Millennium BIM.xlsx.
 /// </summary>
 public class LeitorExtratoMillenniumBIMTests
 {
-    private const string CaminhoFicheiro = @"C:\Users\alber\OneDrive\Ambiente de Trabalho\Extractos\Millennium BIM.xlsx";
+    private static readonly string CaminhoFicheiro =
+        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "Millennium BIM.xlsx");
 
     private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
 

@@ -5,11 +5,12 @@ namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
 /// Testes de integração para o leitor de extratos do Access Bank.
-/// Requer o ficheiro de exemplo em Extractos/Access Bank.xls.
+/// Requer o ficheiro de exemplo em TestData/Extractos/Access Bank.xls.
 /// </summary>
 public class LeitorExtratoAccessBankTests
 {
-    private const string CaminhoFicheiro = @"C:\Users\alber\OneDrive\Ambiente de Trabalho\Extractos\Access Bank.xls";
+    private static readonly string CaminhoFicheiro =
+        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "Access Bank.xls");
 
     private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
 

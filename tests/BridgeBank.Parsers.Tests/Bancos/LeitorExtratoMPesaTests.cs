@@ -5,11 +5,12 @@ namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
 /// Testes de integração para o leitor de extratos do M-Pesa.
-/// Requer o ficheiro de exemplo em Extractos/M-Pesa.xls.
+/// Requer o ficheiro de exemplo em TestData/Extractos/M-Pesa.xls.
 /// </summary>
 public class LeitorExtratoMPesaTests
 {
-    private const string CaminhoFicheiro = @"C:\Users\alber\OneDrive\Ambiente de Trabalho\Extractos\M-Pesa.xls";
+    private static readonly string CaminhoFicheiro =
+        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "M-Pesa.xls");
 
     private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
 

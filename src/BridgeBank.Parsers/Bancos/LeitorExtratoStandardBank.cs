@@ -35,6 +35,7 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
         using var workbook = AbrirFicheiro(caminhoArquivo);
         var folha = workbook.GetSheetAt(0);
         var ultimaLinha = ObterUltimaLinha(folha);
+        int ultimaLinhaTransacoesReal = LinhaInicioTransacoes;
 
         var extrato = new ExtratoBancario
         {
@@ -54,7 +55,10 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
 
             var transacao = ExtrairTransacao(folha, linha, textoData);
             if (transacao != null)
+            {
                 extrato.Transacoes.Add(transacao);
+                ultimaLinhaTransacoesReal = linha;
+            }
         }
 
         if (extrato.Transacoes.Count > 0)
@@ -65,9 +69,8 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
             extrato.SaldoFinal = ParseadorNumerico.ParsearValorMonetario(
                 ObterTextoCelula(folha, LinhaInicioTransacoes, ColunaSaldo));
 
-            var ultimaLinhaTransacoes = LinhaInicioTransacoes + extrato.Transacoes.Count - 1;
             var saldoUltimaTransacao = ParseadorNumerico.ParsearValorMonetario(
-                ObterTextoCelula(folha, ultimaLinhaTransacoes, ColunaSaldo));
+                ObterTextoCelula(folha, ultimaLinhaTransacoesReal, ColunaSaldo));
             var ultimaTransacao = extrato.Transacoes[^1];
             extrato.SaldoInicial = saldoUltimaTransacao
                 - (ultimaTransacao.Tipo == TipoTransacao.Credito ? ultimaTransacao.Valor : -ultimaTransacao.Valor);

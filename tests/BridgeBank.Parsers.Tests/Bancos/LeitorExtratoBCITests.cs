@@ -5,11 +5,12 @@ namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
 /// Testes de integração para o leitor de extratos do BCI.
-/// Requer o ficheiro de exemplo em Extractos/BCI.xls.
+/// Requer o ficheiro de exemplo em TestData/Extractos/BCI.xls.
 /// </summary>
 public class LeitorExtratoBCITests
 {
-    private const string CaminhoFicheiro = @"C:\Users\alber\OneDrive\Ambiente de Trabalho\Extractos\BCI.xls";
+    private static readonly string CaminhoFicheiro =
+        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "BCI.xls");
 
     private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
 

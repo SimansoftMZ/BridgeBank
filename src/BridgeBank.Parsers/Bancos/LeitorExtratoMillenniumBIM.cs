@@ -55,13 +55,14 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
                 continue;
 
             var transacao = ExtrairTransacao(folha, linha);
-            extrato.Transacoes.Add(transacao);
+            if (transacao != null)
+                extrato.Transacoes.Add(transacao);
         }
 
         return extrato;
     }
 
-    private static Transacao ExtrairTransacao(ISheet folha, int linha)
+    private static Transacao? ExtrairTransacao(ISheet folha, int linha)
     {
         var data = ObterDataCelula(folha, linha, ColunaDataTransacao);
         if (data == null)
@@ -72,6 +73,9 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
                 data = parsed;
         }
 
+        if (data == null)
+            return null;
+
         var debito = ObterNumericoCelula(folha, linha, ColunaDebito);
         var credito = ObterNumericoCelula(folha, linha, ColunaCredito);
         var isCredito = credito > 0;
@@ -80,7 +84,7 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
         return new Transacao
         {
             Id = Guid.NewGuid().ToString(),
-            Data = data ?? DateTime.MinValue,
+            Data = data.Value,
             Valor = (decimal)valor,
             Descricao = ObterTextoCelula(folha, linha, ColunaDescricao),
             Tipo = isCredito ? TipoTransacao.Credito : TipoTransacao.Debito
