@@ -1,3 +1,4 @@
+using Simansoft.BridgeBank.Core.Interfaces;
 using Simansoft.BridgeBank.Core.Models;
 using Simansoft.BridgeBank.Core.Strategies;
 
@@ -9,8 +10,8 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
     public void TentarCorrespondencia_ComReferenciaExata_DeveRetornarCorrespondencia()
     {
         // Arrange
-        var estrategia = new EstrategiaCorrespondenciaPorReferencia();
-        var transacao = new Transacao
+        EstrategiaCorrespondenciaPorReferencia estrategia = new();
+        Transacao transacao = new()
         {
             Id = "1",
             Data = DateTime.Now,
@@ -18,10 +19,10 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
             Referencia = "INV-001"
         };
 
-        var lancamentos = new List<LancamentoERP>
-        {
+        List<LancamentoERP> lancamentos =
+        [
             new() { Id = "1", Referencia = "INV-001", Valor = 1000, Data = DateTime.Now }
-        };
+        ];
 
         // Act
         var resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
@@ -37,21 +38,21 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
     public void TentarCorrespondencia_SemReferencia_DeveRetornarNull()
     {
         // Arrange
-        var estrategia = new EstrategiaCorrespondenciaPorReferencia();
-        var transacao = new Transacao
+        EstrategiaCorrespondenciaPorReferencia estrategia = new();
+        Transacao transacao = new()
         {
             Id = "1",
             Data = DateTime.Now,
             Valor = 1000
         };
 
-        var lancamentos = new List<LancamentoERP>
-        {
+        List<LancamentoERP> lancamentos =
+        [
             new() { Id = "1", Referencia = "INV-001", Valor = 1000 }
-        };
+        ];
 
         // Act
-        var resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
+        ResultadoCorrespondencia? resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
 
         // Assert
         Assert.Null(resultado);

@@ -10,31 +10,31 @@ public class MotorReconciliacaoTests
     public void Reconciliar_ComEstrategiaReferencia_DeveReconciliarCorretamente()
     {
         // Arrange
-        var motor = new MotorReconciliacao();
+        MotorReconciliacao motor = new();
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
 
-        var transacoes = new List<Transacao>
-        {
+        List<Transacao> transacoes =
+        [
             new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-001"
             }
-        };
+        ];
 
-        var lancamentos = new List<LancamentoERP>
-        {
+        List<LancamentoERP> lancamentos =
+        [
             new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-001"
             }
-        };
+        ];
 
         // Act
-        var resultados = motor.Reconciliar(transacoes, lancamentos);
+        List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
         Assert.Single(resultados);
@@ -48,31 +48,31 @@ public class MotorReconciliacaoTests
     public void Reconciliar_SemCorrespondencia_DeveTerTipoNenhuma()
     {
         // Arrange
-        var motor = new MotorReconciliacao();
+        MotorReconciliacao motor = new();
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
 
-        var transacoes = new List<Transacao>
-        {
+        List<Transacao> transacoes =
+        [
             new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-001"
             }
-        };
+        ];
 
-        var lancamentos = new List<LancamentoERP>
-        {
+        List<LancamentoERP> lancamentos =
+        [
             new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-002"
             }
-        };
+        ];
 
         // Act
-        var resultados = motor.Reconciliar(transacoes, lancamentos);
+        List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
         Assert.Single(resultados);
@@ -84,32 +84,32 @@ public class MotorReconciliacaoTests
     public void Reconciliar_ComMultiplasEstrategias_DeveUsarPrioridade()
     {
         // Arrange
-        var motor = new MotorReconciliacao();
+        MotorReconciliacao motor = new();
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorValorEData());
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
 
-        var transacoes = new List<Transacao>
-        {
+        List<Transacao> transacoes =
+        [
             new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-001"
             }
-        };
+        ];
 
-        var lancamentos = new List<LancamentoERP>
-        {
+        List<LancamentoERP> lancamentos =
+        [
             new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
                 Referencia = "INV-001"
             }
-        };
+        ];
 
         // Act
-        var resultados = motor.Reconciliar(transacoes, lancamentos);
+        List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
         Assert.Single(resultados);
