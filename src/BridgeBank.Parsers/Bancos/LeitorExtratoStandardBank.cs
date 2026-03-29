@@ -1,137 +1,116 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
 using BridgeBank.Core.Models;
 using BridgeBank.Parsers.Excel;
-using OfficeOpenXml;
+using BridgeBank.Parsers.Util;
+using NPOI.SS.UserModel;
 
 namespace BridgeBank.Parsers.Bancos;
 
 /// <summary>
-/// Leitor de extratos do Standard Bank
+/// Leitor de extratos do Standard Bank.
+/// Formato: ficheiro .xlsx com todos os valores em texto.
 /// </summary>
-public class LeitorExtratoStandardBank : LeitorExcelBase
+public partial class LeitorExtratoStandardBank : LeitorExcelBase
 {
-    private const int LinhaInicioTransacoes = 9;
-    private const int ColunaData = 1;
-    private const int ColunaReferencia = 2;
-    private const int ColunaDescricao = 3;
+    // Estrutura (índices base 0):
+    // Linha 0: "Standard Bank"
+    // Linha 1: "Movimentos de Conta - {conta}"
+    // Linha 2: Cabeçalhos: Data | Data valor | Descrição | Referência | Débito | Crédito | Saldo | Moeda
+    // Linha 3+: Transacções (strings)
+    // Linha N: "Copyright © ..."
+
+    private const int LinhaInfoConta = 1;
+    private const int LinhaInicioTransacoes = 3;
+
+    private const int ColunaData = 0;
+    private const int ColunaDescricao = 2;
+    private const int ColunaReferencia = 3;
     private const int ColunaDebito = 4;
     private const int ColunaCredito = 5;
     private const int ColunaSaldo = 6;
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var package = new ExcelPackage(new FileInfo(caminhoArquivo));
-        var planilha = package.Workbook.Worksheets[0];
+        using var workbook = AbrirFicheiro(caminhoArquivo);
+        var folha = workbook.GetSheetAt(0);
+        var ultimaLinha = ObterUltimaLinha(folha);
+        int ultimaLinhaTransacoesReal = LinhaInicioTransacoes;
 
         var extrato = new ExtratoBancario
         {
             Banco = "Standard Bank",
-            NumeroConta = ObterNumeroConta(planilha),
-            DataInicio = ObterDataInicio(planilha),
-            DataFim = ObterDataFim(planilha),
-            SaldoInicial = ObterSaldoInicial(planilha),
+            NumeroConta = ObterNumeroConta(folha),
             Transacoes = new List<Transacao>()
         };
 
-        for (int linha = LinhaInicioTransacoes; linha <= planilha.Dimension.End.Row; linha++)
+        for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
-            if (LinhaVazia(planilha, linha))
+            var textoData = ObterTextoCelula(folha, linha, ColunaData);
+
+            if (string.IsNullOrWhiteSpace(textoData))
+                break;
+            if (textoData.StartsWith("Copyright", StringComparison.OrdinalIgnoreCase))
                 break;
 
-            var transacao = ExtrairTransacao(planilha, linha);
-            extrato.Transacoes.Add(transacao);
+            var transacao = ExtrairTransacao(folha, linha, textoData);
+            if (transacao != null)
+            {
+                extrato.Transacoes.Add(transacao);
+                ultimaLinhaTransacoesReal = linha;
+            }
         }
 
-        extrato.SaldoFinal = ObterSaldoFinal(planilha);
+        if (extrato.Transacoes.Count > 0)
+        {
+            extrato.DataInicio = extrato.Transacoes.Min(t => t.Data);
+            extrato.DataFim = extrato.Transacoes.Max(t => t.Data);
+
+            extrato.SaldoFinal = ParseadorNumerico.ParsearValorMonetario(
+                ObterTextoCelula(folha, LinhaInicioTransacoes, ColunaSaldo));
+
+            var saldoUltimaTransacao = ParseadorNumerico.ParsearValorMonetario(
+                ObterTextoCelula(folha, ultimaLinhaTransacoesReal, ColunaSaldo));
+            var ultimaTransacao = extrato.Transacoes[^1];
+            extrato.SaldoInicial = saldoUltimaTransacao
+                - (ultimaTransacao.Tipo == TipoTransacao.Credito ? ultimaTransacao.Valor : -ultimaTransacao.Valor);
+        }
 
         return extrato;
     }
 
-    protected override DateTime ObterData(ExcelWorksheet planilha, int linha)
+    private static Transacao? ExtrairTransacao(ISheet folha, int linha, string textoData)
     {
-        var valor = planilha.Cells[linha, ColunaData].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.MinValue;
-    }
+        if (!DateTime.TryParseExact(textoData, ["dd-MM-yyyy", "dd/MM/yyyy"],
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out var data))
+            return null;
 
-    protected override decimal ObterValor(ExcelWorksheet planilha, int linha)
-    {
-        var debito = planilha.Cells[linha, ColunaDebito].Value;
-        var credito = planilha.Cells[linha, ColunaCredito].Value;
+        var textoDebito = ObterTextoCelula(folha, linha, ColunaDebito);
+        var textoCredito = ObterTextoCelula(folha, linha, ColunaCredito);
+        var isDebito = !string.IsNullOrEmpty(textoDebito);
 
-        if (debito != null && decimal.TryParse(debito.ToString(), out var valorDebito))
-            return valorDebito;
+        var valor = isDebito
+            ? ParseadorNumerico.ParsearValorMonetario(textoDebito)
+            : ParseadorNumerico.ParsearValorMonetario(textoCredito);
 
-        if (credito != null && decimal.TryParse(credito.ToString(), out var valorCredito))
-            return valorCredito;
-
-        return 0;
-    }
-
-    protected override string ObterDescricao(ExcelWorksheet planilha, int linha)
-    {
-        return planilha.Cells[linha, ColunaDescricao].Value?.ToString() ?? string.Empty;
-    }
-
-    protected override string? ObterReferencia(ExcelWorksheet planilha, int linha)
-    {
-        return planilha.Cells[linha, ColunaReferencia].Value?.ToString();
-    }
-
-    protected override TipoTransacao ObterTipo(ExcelWorksheet planilha, int linha)
-    {
-        var debito = planilha.Cells[linha, ColunaDebito].Value;
-        return debito != null ? TipoTransacao.Debito : TipoTransacao.Credito;
-    }
-
-    private string ObterNumeroConta(ExcelWorksheet planilha)
-    {
-        return planilha.Cells[3, 2].Value?.ToString() ?? "N/A";
-    }
-
-    private DateTime ObterDataInicio(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[5, 2].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.Now;
-    }
-
-    private DateTime ObterDataFim(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[6, 2].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.Now;
-    }
-
-    private decimal ObterSaldoInicial(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[7, 2].Value;
-        return valor != null && decimal.TryParse(valor.ToString(), out var saldo) ? saldo : 0;
-    }
-
-    private decimal ObterSaldoFinal(ExcelWorksheet planilha)
-    {
-        var ultimaLinha = planilha.Dimension.End.Row;
-        for (int i = ultimaLinha; i >= LinhaInicioTransacoes; i--)
+        return new Transacao
         {
-            var saldo = planilha.Cells[i, ColunaSaldo].Value;
-            if (saldo != null && decimal.TryParse(saldo.ToString(), out var valorSaldo))
-                return valorSaldo;
-        }
-        return 0;
+            Id = Guid.NewGuid().ToString(),
+            Data = data,
+            Valor = valor,
+            Descricao = ObterTextoCelula(folha, linha, ColunaDescricao),
+            Referencia = ObterTextoCelula(folha, linha, ColunaReferencia) is { Length: > 0 } r ? r : null,
+            Tipo = isDebito ? TipoTransacao.Debito : TipoTransacao.Credito
+        };
     }
 
-    private bool LinhaVazia(ExcelWorksheet planilha, int linha)
+    private static string ObterNumeroConta(ISheet folha)
     {
-        return planilha.Cells[linha, ColunaData].Value == null &&
-               planilha.Cells[linha, ColunaDescricao].Value == null;
+        var texto = ObterTextoCelula(folha, LinhaInfoConta, 0);
+        var match = ContaRegex().Match(texto);
+        return match.Success ? match.Groups["conta"].Value : "N/A";
     }
+
+    [GeneratedRegex(@"-\s*(?<conta>\d+)")]
+    private static partial Regex ContaRegex();
 }

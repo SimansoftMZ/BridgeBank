@@ -1,133 +1,112 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
 using BridgeBank.Core.Models;
 using BridgeBank.Parsers.Excel;
-using OfficeOpenXml;
+using BridgeBank.Parsers.Util;
+using NPOI.SS.UserModel;
 
 namespace BridgeBank.Parsers.Bancos;
 
 /// <summary>
-/// Leitor de extratos do Millennium BIM
+/// Leitor de extratos do Millennium BIM.
+/// Formato: ficheiro .xlsx com colunas deslocadas (início na coluna C/índice 2).
 /// </summary>
-public class LeitorExtratoMillenniumBIM : LeitorExcelBase
+public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
 {
-    private const int LinhaInicioTransacoes = 8;
-    private const int ColunaData = 1;
-    private const int ColunaDescricao = 3;
-    private const int ColunaReferencia = 2;
-    private const int ColunaValor = 4;
-    private const int ColunaSaldo = 5;
+    // Estrutura do ficheiro Millennium BIM (índices base 0):
+    // Linha 5 (row 5), Col C (2): "Lista de transacções da conta Nº {conta} em MZN, de {inicio} até {fim}"
+    // Linha 6 (row 6), Col I (8): Saldo Inicial (string)
+    // Linha 9 (row 9), Col I (8): Saldo Final (string)
+    // Linha 10 (row 10): Cabeçalhos
+    // Linha 11+ (row 11+): Col2=Data | Col4=Descrição | Col6=Débito(num) | Col8=Crédito(num) | Col9=Saldo(num)
+
+    private const int LinhaInfoConta = 5;
+    private const int LinhaSaldoInicial = 6;
+    private const int LinhaSaldoFinal = 9;
+    private const int LinhaInicioTransacoes = 11;
+
+    private const int ColunaDataTransacao = 2;
+    private const int ColunaDescricao = 4;
+    private const int ColunaDebito = 6;
+    private const int ColunaCredito = 8;
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var package = new ExcelPackage(new FileInfo(caminhoArquivo));
-        var planilha = package.Workbook.Worksheets[0];
+        using var workbook = AbrirFicheiro(caminhoArquivo);
+        var folha = workbook.GetSheetAt(0);
+
+        var (conta, dataInicio, dataFim) = ExtrairInfoConta(folha);
 
         var extrato = new ExtratoBancario
         {
             Banco = "Millennium BIM",
-            NumeroConta = ObterNumeroConta(planilha),
-            DataInicio = ObterDataInicio(planilha),
-            DataFim = ObterDataFim(planilha),
-            SaldoInicial = ObterSaldoInicial(planilha),
+            NumeroConta = conta,
+            DataInicio = dataInicio,
+            DataFim = dataFim,
+            SaldoInicial = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaSaldoInicial, 8)),
+            SaldoFinal = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaSaldoFinal, 8)),
             Transacoes = new List<Transacao>()
         };
 
-        for (int linha = LinhaInicioTransacoes; linha <= planilha.Dimension.End.Row; linha++)
+        var ultimaLinha = ObterUltimaLinha(folha);
+        for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
-            if (LinhaVazia(planilha, linha))
-                break;
+            if (CelulaVazia(folha, linha, ColunaDataTransacao))
+                continue;
 
-            var transacao = ExtrairTransacao(planilha, linha);
-            extrato.Transacoes.Add(transacao);
+            var transacao = ExtrairTransacao(folha, linha);
+            if (transacao != null)
+                extrato.Transacoes.Add(transacao);
         }
-
-        extrato.SaldoFinal = ObterSaldoFinal(planilha);
 
         return extrato;
     }
 
-    protected override DateTime ObterData(ExcelWorksheet planilha, int linha)
+    private static Transacao? ExtrairTransacao(ISheet folha, int linha)
     {
-        var valor = planilha.Cells[linha, ColunaData].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.MinValue;
-    }
-
-    protected override decimal ObterValor(ExcelWorksheet planilha, int linha)
-    {
-        var valor = planilha.Cells[linha, ColunaValor].Value;
-        return valor != null && decimal.TryParse(valor.ToString(), out var valorDecimal)
-            ? Math.Abs(valorDecimal)
-            : 0;
-    }
-
-    protected override string ObterDescricao(ExcelWorksheet planilha, int linha)
-    {
-        return planilha.Cells[linha, ColunaDescricao].Value?.ToString() ?? string.Empty;
-    }
-
-    protected override string? ObterReferencia(ExcelWorksheet planilha, int linha)
-    {
-        return planilha.Cells[linha, ColunaReferencia].Value?.ToString();
-    }
-
-    protected override TipoTransacao ObterTipo(ExcelWorksheet planilha, int linha)
-    {
-        var valor = planilha.Cells[linha, ColunaValor].Value;
-        if (valor != null && decimal.TryParse(valor.ToString(), out var valorDecimal))
+        var data = ObterDataCelula(folha, linha, ColunaDataTransacao);
+        if (data == null)
         {
-            return valorDecimal >= 0 ? TipoTransacao.Credito : TipoTransacao.Debito;
+            var textoData = ObterTextoCelula(folha, linha, ColunaDataTransacao);
+            if (DateTime.TryParseExact(textoData, ["dd/MM/yyyy", "dd-MM-yyyy"],
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+                data = parsed;
         }
-        return TipoTransacao.Debito;
-    }
 
-    private string ObterNumeroConta(ExcelWorksheet planilha)
-    {
-        return planilha.Cells[2, 2].Value?.ToString() ?? "N/A";
-    }
+        if (data == null)
+            return null;
 
-    private DateTime ObterDataInicio(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[4, 2].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.Now;
-    }
+        var debito = ObterNumericoCelula(folha, linha, ColunaDebito);
+        var credito = ObterNumericoCelula(folha, linha, ColunaCredito);
+        var isCredito = credito > 0;
+        var valor = isCredito ? credito : Math.Abs(debito);
 
-    private DateTime ObterDataFim(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[5, 2].Value;
-        if (valor is DateTime data)
-            return data;
-        if (valor != null && DateTime.TryParse(valor.ToString(), out var dataParsed))
-            return dataParsed;
-        return DateTime.Now;
-    }
-
-    private decimal ObterSaldoInicial(ExcelWorksheet planilha)
-    {
-        var valor = planilha.Cells[6, 2].Value;
-        return valor != null && decimal.TryParse(valor.ToString(), out var saldo) ? saldo : 0;
-    }
-
-    private decimal ObterSaldoFinal(ExcelWorksheet planilha)
-    {
-        var ultimaLinha = planilha.Dimension.End.Row;
-        for (int i = ultimaLinha; i >= LinhaInicioTransacoes; i--)
+        return new Transacao
         {
-            var saldo = planilha.Cells[i, ColunaSaldo].Value;
-            if (saldo != null && decimal.TryParse(saldo.ToString(), out var valorSaldo))
-                return valorSaldo;
-        }
-        return 0;
+            Id = Guid.NewGuid().ToString(),
+            Data = data.Value,
+            Valor = (decimal)valor,
+            Descricao = ObterTextoCelula(folha, linha, ColunaDescricao),
+            Tipo = isCredito ? TipoTransacao.Credito : TipoTransacao.Debito
+        };
     }
 
-    private bool LinhaVazia(ExcelWorksheet planilha, int linha)
+    private static (string conta, DateTime dataInicio, DateTime dataFim) ExtrairInfoConta(ISheet folha)
     {
-        return planilha.Cells[linha, ColunaData].Value == null;
+        var texto = ObterTextoCelula(folha, LinhaInfoConta, 2);
+        var match = InfoContaRegex().Match(texto);
+        if (match.Success)
+        {
+            var conta = match.Groups["conta"].Value;
+            DateTime.TryParseExact(match.Groups["inicio"].Value, "dd-MM-yyyy",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicio);
+            DateTime.TryParseExact(match.Groups["fim"].Value, "dd-MM-yyyy",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var fim);
+            return (conta, inicio, fim);
+        }
+        return ("N/A", DateTime.MinValue, DateTime.MinValue);
     }
+
+    [GeneratedRegex(@"conta\s+N[ºo°]\s*(?<conta>\d+).*?de\s+(?<inicio>\d{2}-\d{2}-\d{4})\s+at[ée]\s+(?<fim>\d{2}-\d{2}-\d{4})", RegexOptions.IgnoreCase)]
+    private static partial Regex InfoContaRegex();
 }
