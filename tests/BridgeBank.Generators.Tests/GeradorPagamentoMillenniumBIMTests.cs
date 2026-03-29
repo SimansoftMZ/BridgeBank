@@ -1,5 +1,5 @@
 using BridgeBank.Generators.Bancos;
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Models;
 
 namespace BridgeBank.Generators.Tests;
 

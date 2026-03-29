@@ -1,8 +1,8 @@
 using System.Text;
-using BridgeBank.Generators.Interfaces;
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Interfaces;
+using Simansoft.BridgeBank.Generators.Models;
 
-namespace BridgeBank.Generators.Bancos;
+namespace Simansoft.BridgeBank.Generators.Bancos;
 
 /// <summary>
 /// Gerador de ficheiros de pagamento para o BCI
@@ -32,10 +32,10 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
         File.WriteAllLines(caminhoArquivo, linhas, Encoding.UTF8);
     }
 
-    private string GerarCabecalho(DateTime dataGeracao, int totalPagamentos)
+    private static string GerarCabecalho(DateTime dataGeracao, int totalPagamentos)
     {
         var sb = new StringBuilder();
-        sb.Append("0");                                              // Tipo de registro
+        sb.Append('0');                                              // Tipo de registro
         sb.Append(dataGeracao.ToString("yyyyMMdd").PadRight(8));    // Data de geração
         sb.Append(totalPagamentos.ToString().PadLeft(6, '0'));      // Total de pagamentos
         sb.Append("BCI".PadRight(20));                              // Banco
@@ -46,12 +46,12 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
     private string GerarLinhaPagamento(Pagamento pagamento)
     {
         var sb = new StringBuilder();
-        sb.Append("1");                                                      // Tipo de registro
+        sb.Append('1');                                                      // Tipo de registro
         sb.Append(pagamento.DataPagamento.ToString("yyyyMMdd").PadRight(8)); // Data pagamento
         sb.Append(FormatarValor(pagamento.Valor).PadLeft(15, '0'));         // Valor
-        sb.Append(pagamento.Beneficiario.PadRight(30).Substring(0, 30));    // Beneficiário
-        sb.Append(pagamento.ContaBeneficiario.PadRight(20).Substring(0, 20));// Conta
-        sb.Append((pagamento.Referencia ?? "").PadRight(20).Substring(0, 20));// Referência
+        sb.Append(pagamento.Beneficiario.PadRight(30).AsSpan(0, 30));    // Beneficiário
+        sb.Append(pagamento.ContaBeneficiario.PadRight(20).AsSpan(0, 20));// Conta
+        sb.Append((pagamento.Referencia ?? "").PadRight(20).AsSpan(0, 20));// Referência
         sb.Append(" ".PadRight(7));                                          // Preenchimento
         return sb.ToString();
     }
@@ -60,14 +60,14 @@ public class GeradorPagamentoBCI : IGeradorFicheiroPagamento
     {
         var totalValor = pagamentos.Sum(p => p.Valor);
         var sb = new StringBuilder();
-        sb.Append("9");                                              // Tipo de registro
+        sb.Append('9');                                              // Tipo de registro
         sb.Append(pagamentos.Count().ToString().PadLeft(6, '0'));   // Total de registros
         sb.Append(FormatarValor(totalValor).PadLeft(15, '0'));      // Valor total
         sb.Append(" ".PadRight(79));                                 // Preenchimento
         return sb.ToString();
     }
 
-    private string FormatarValor(decimal valor)
+    private static string FormatarValor(decimal valor)
     {
         return ((long)(valor * 100)).ToString();
     }

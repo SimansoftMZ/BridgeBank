@@ -1,6 +1,6 @@
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Models;
 
-namespace BridgeBank.Generators.Interfaces;
+namespace Simansoft.BridgeBank.Generators.Interfaces;
 
 /// <summary>
 /// Interface para geradores de ficheiros de pagamento

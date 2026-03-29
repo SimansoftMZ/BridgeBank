@@ -1,8 +1,8 @@
 using System.Text;
-using BridgeBank.Generators.Interfaces;
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Interfaces;
+using Simansoft.BridgeBank.Generators.Models;
 
-namespace BridgeBank.Generators.Bancos;
+namespace Simansoft.BridgeBank.Generators.Bancos;
 
 /// <summary>
 /// Gerador de ficheiros de pagamento para o Standard Bank
@@ -48,7 +48,7 @@ public class GeradorPagamentoStandardBank : IGeradorFicheiroPagamento
         File.WriteAllText(caminhoArquivo, xml.ToString(), Encoding.UTF8);
     }
 
-    private string EscaparXml(string valor)
+    private static string EscaparXml(string valor)
     {
         if (string.IsNullOrEmpty(valor))
             return "";

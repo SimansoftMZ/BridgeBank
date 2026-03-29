@@ -1,8 +1,8 @@
 using System.Text;
-using BridgeBank.Generators.Interfaces;
-using BridgeBank.Generators.Models;
+using Simansoft.BridgeBank.Generators.Interfaces;
+using Simansoft.BridgeBank.Generators.Models;
 
-namespace BridgeBank.Generators.Bancos;
+namespace Simansoft.BridgeBank.Generators.Bancos;
 
 /// <summary>
 /// Gerador de ficheiros de pagamento para o Millennium BIM
@@ -14,10 +14,11 @@ public class GeradorPagamentoMillenniumBIM : IGeradorFicheiroPagamento
 
     public void GerarFicheiro(IEnumerable<Pagamento> pagamentos, string caminhoArquivo)
     {
-        var linhas = new List<string>();
-
-        // Cabeçalho
-        linhas.Add("Data;Beneficiario;Conta;Banco;Valor;Referencia;Descricao");
+        var linhas = new List<string>
+        {
+            // Cabeçalho
+            "Data;Beneficiario;Conta;Banco;Valor;Referencia;Descricao"
+        };
 
         // Pagamentos
         foreach (var pagamento in pagamentos)
@@ -28,7 +29,7 @@ public class GeradorPagamentoMillenniumBIM : IGeradorFicheiroPagamento
         File.WriteAllLines(caminhoArquivo, linhas, Encoding.UTF8);
     }
 
-    private string GerarLinhaPagamento(Pagamento pagamento)
+    private static string GerarLinhaPagamento(Pagamento pagamento)
     {
         return string.Join(";",
             pagamento.DataPagamento.ToString("dd/MM/yyyy"),
@@ -41,7 +42,7 @@ public class GeradorPagamentoMillenniumBIM : IGeradorFicheiroPagamento
         );
     }
 
-    private string EscaparCsv(string valor)
+    private static string EscaparCsv(string valor)
     {
         if (string.IsNullOrEmpty(valor))
             return "";

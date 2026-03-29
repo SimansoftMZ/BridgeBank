@@ -1,4 +1,4 @@
-namespace BridgeBank.Generators.Models;
+namespace Simansoft.BridgeBank.Generators.Models;
 
 /// <summary>
 /// Representa um pagamento a ser processado
