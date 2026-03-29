@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="MSTest.Sdk/3.3.1">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,6 +7,9 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,19 +19,41 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageReference Include="MSTest.TestFramework" Version="4.1.0" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="MSTest.TestAdapter" Version="4.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="MSTest.TestFramework" Version="4.1.0" />
+	</ItemGroup>
+	
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BridgeBank.Generators\BridgeBank.Generators.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Testing.Extensions.CodeCoverage" Version="18.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Testing.Extensions.TrxReport" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="MSTest.Analyzers" Version="4.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

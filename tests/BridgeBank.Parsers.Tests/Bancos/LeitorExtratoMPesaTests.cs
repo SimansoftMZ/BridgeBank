@@ -4,21 +4,18 @@ using Simansoft.BridgeBank.Core.Models;
 namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
-/// Testes de integração para o leitor de extratos do M-Pesa.
-/// Requer o ficheiro de exemplo em TestData/Extractos/M-Pesa.xls.
+/// Testes para o leitor de extratos do M-Pesa.
+/// Utiliza ficheiro fictício em Fixtures/Extractos/M-Pesa.xls.
 /// </summary>
+[TestClass]
 public class LeitorExtratoMPesaTests
 {
     private static readonly string CaminhoFicheiro =
-        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "M-Pesa.xls");
+        Path.Combine(AppContext.BaseDirectory, "Fixtures", "Extractos", "M-Pesa.xls");
 
-    private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
-
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_RetornaExtratoMPesa()
+    [TestMethod]
+    public void LerExtrato_RetornaExtratoMPesa()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -26,38 +23,33 @@ public class LeitorExtratoMPesaTests
         Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_CodigoCurtoCorreto()
+    [TestMethod]
+    public void LerExtrato_CodigoCurtoCorreto()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("901977", extrato.NumeroConta);
+        Assert.AreEqual("258841234567", extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_DatasCorretas()
+    [TestMethod]
+    public void LerExtrato_DatasCorretas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio.Date);
-        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim.Date);
+        Assert.AreEqual(2025, extrato.DataInicio.Year);
+        Assert.AreEqual(1, extrato.DataInicio.Month);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesExtraidas()
+    [TestMethod]
+    public void LerExtrato_TransacoesExtraidas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
+        // 13 completed transactions (1 reversed is excluded)
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -66,11 +58,9 @@ public class LeitorExtratoMPesaTests
         };
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesCreditoEDebito()
+    [TestMethod]
+    public void LerExtrato_TransacoesCreditoEDebito()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -81,11 +71,9 @@ public class LeitorExtratoMPesaTests
         Assert.IsNotEmpty(debitos);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_ReferenciasPresentes()
+    [TestMethod]
+    public void LerExtrato_ReferenciasPresentes()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto M-Pesa não disponível");
-
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -96,7 +84,17 @@ public class LeitorExtratoMPesaTests
         }
     }
 
-    [Fact]
+    [TestMethod]
+    public void LerExtrato_TransacaoRevertidaExcluida()
+    {
+        LeitorExtratoMPesa leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
+
+        // A transacao com status "Reversed" nao deve ser incluida
+        Assert.DoesNotContain(t => t.Referencia == "RCP0001014", extrato.Transacoes);
+    }
+
+    [TestMethod]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoMPesa leitor = new();

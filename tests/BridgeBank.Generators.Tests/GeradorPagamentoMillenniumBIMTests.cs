@@ -3,9 +3,10 @@ using Simansoft.BridgeBank.Generators.Models;
 
 namespace BridgeBank.Generators.Tests;
 
+[TestClass]
 public class GeradorPagamentoMillenniumBIMTests
 {
-    [Fact]
+    [TestMethod]
     public void GerarFicheiro_DeveGerarCsvComCabecalho()
     {
         // Arrange
@@ -15,11 +16,11 @@ public class GeradorPagamentoMillenniumBIMTests
             new() {
                 Id = "P1",
                 DataPagamento = new DateTime(2026, 1, 1),
-                Valor = 1000.50m,
+                Valor = 18500m,
                 Beneficiario = "Fornecedor A",
                 ContaBeneficiario = "123456789",
                 BancoBeneficiario = "BCI",
-                Referencia = "REF-001"
+                Referencia = "BIM0002"
             }
         ];
 

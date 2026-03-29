@@ -4,21 +4,18 @@ using Simansoft.BridgeBank.Core.Models;
 namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
-/// Testes de integração para o leitor de extratos do BCI.
-/// Requer o ficheiro de exemplo em TestData/Extractos/BCI.xls.
+/// Testes para o leitor de extratos do BCI.
+/// Utiliza ficheiro fictício em Fixtures/Extractos/BCI.xls.
 /// </summary>
+[TestClass]
 public class LeitorExtratoBCITests
 {
     private static readonly string CaminhoFicheiro =
-        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "BCI.xls");
+        Path.Combine(AppContext.BaseDirectory, "Fixtures", "Extractos", "BCI.xls");
 
-    private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
-
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_RetornaExtratoBCI()
+    [TestMethod]
+    public void LerExtrato_RetornaExtratoBCI()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -27,37 +24,32 @@ public class LeitorExtratoBCITests
         Assert.AreNotEqual("N/A", extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_ContaCorrectamenteIdentificada()
+    [TestMethod]
+    public void LerExtrato_ContaCorrectamenteIdentificada()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("1242812610003", extrato.NumeroConta);
+        Assert.AreEqual("1234567890", extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_SaldoInicialCorreto()
+    [TestMethod]
+    public void LerExtrato_SaldoInicialCorreto()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(200.00m, extrato.SaldoInicial);
+        Assert.AreEqual(125000.50m, extrato.SaldoInicial);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesExtraidas()
+    [TestMethod]
+    public void LerExtrato_TransacoesExtraidas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
+        Assert.HasCount(10, extrato.Transacoes);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -67,49 +59,53 @@ public class LeitorExtratoBCITests
         }
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_PrimeiraTransacaoCorrecta()
+    [TestMethod]
+    public void LerExtrato_PrimeiraTransacaoCorrecta()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
-        Assert.AreEqual(4400.00m, primeira.Valor);
-        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
-        Assert.Contains("Pag. Serv.", primeira.Descricao);
+        Assert.AreEqual(new DateTime(2025, 1, 2), primeira.Data);
+        Assert.AreEqual(15750.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Debito, primeira.Tipo);
+        Assert.Contains("fornecedor", primeira.Descricao);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesDebitoCorretas()
+    [TestMethod]
+    public void LerExtrato_TransacoesCreditoExistem()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        // A segunda transacção é uma comissão (débito)
-        Transacao comissao = extrato.Transacoes[1];
-        Assert.AreEqual(TipoTransacao.Debito, comissao.Tipo);
-        Assert.Contains("Comissão", comissao.Descricao);
+        List<Transacao> creditos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito)];
+        Assert.IsNotEmpty(creditos);
+        // Segunda transacao e um credito
+        Assert.AreEqual(TipoTransacao.Credito, extrato.Transacoes[1].Tipo);
+        Assert.AreEqual(45000.00m, extrato.Transacoes[1].Valor);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_DatasCorretas()
+    [TestMethod]
+    public void LerExtrato_DatasCorretas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto BCI não disponível");
-
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(12, extrato.DataInicio.Month);
+        Assert.AreEqual(1, extrato.DataInicio.Month);
         Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 
-    [Fact]
+    [TestMethod]
+    public void LerExtrato_SaldoFinalCorreto()
+    {
+        LeitorExtratoBCI leitor = new();
+        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
+
+        Assert.AreEqual(208000.25m, extrato.SaldoFinal);
+    }
+
+    [TestMethod]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoBCI leitor = new();
@@ -117,7 +113,7 @@ public class LeitorExtratoBCITests
         Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 
-    [Fact]
+    [TestMethod]
     public void SuportaArquivo_ExtensaoCsv_RetornaFalse()
     {
         LeitorExtratoBCI leitor = new();

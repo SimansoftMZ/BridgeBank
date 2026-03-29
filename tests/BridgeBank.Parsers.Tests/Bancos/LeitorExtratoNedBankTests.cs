@@ -4,58 +4,50 @@ using Simansoft.BridgeBank.Core.Models;
 namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
-/// Testes de integração para o leitor de extratos do NedBank.
-/// Requer o ficheiro de exemplo em TestData/Extractos/NedBank.xlsx.
+/// Testes para o leitor de extratos do NedBank.
+/// Utiliza ficheiro fictício em Fixtures/Extractos/NedBank.xlsx.
 /// </summary>
+[TestClass]
 public class LeitorExtratoNedBankTests
 {
     private static readonly string CaminhoFicheiro =
-        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "NedBank.xlsx");
+        Path.Combine(AppContext.BaseDirectory, "Fixtures", "Extractos", "NedBank.xlsx");
 
-    private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
-
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_RetornaExtratoNedBank()
+    [TestMethod]
+    public void LerExtrato_RetornaExtratoNedBank()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual("NedBank", extrato.Banco);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_SaldoAberturaCorreto()
+    [TestMethod]
+    public void LerExtrato_SaldoAberturaCorreto()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(4302167.29m, extrato.SaldoInicial);
+        Assert.AreEqual(95000.00m, extrato.SaldoInicial);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_SaldoFinalCorreto()
+    [TestMethod]
+    public void LerExtrato_SaldoFinalCorreto()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(4664634.64m, extrato.SaldoFinal);
+        Assert.AreEqual(190900.00m, extrato.SaldoFinal);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesExtraidas()
+    [TestMethod]
+    public void LerExtrato_TransacoesExtraidas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
+        Assert.AreEqual(10, extrato.Transacoes.Count);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -64,26 +56,22 @@ public class LeitorExtratoNedBankTests
         };
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_PrimeiraTransacaoCorrecta()
+    [TestMethod]
+    public void LerExtrato_PrimeiraTransacaoCorrecta()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
-        Assert.AreEqual(4400.00m, primeira.Valor);
+        Assert.AreEqual(new DateTime(2025, 1, 3), primeira.Data);
+        Assert.AreEqual(22500.00m, primeira.Valor);
         Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
-        Assert.AreEqual("TT253350YHJ6", primeira.Referencia);
+        Assert.AreEqual("NED001", primeira.Referencia);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesDebitoExistem()
+    [TestMethod]
+    public void LerExtrato_TransacoesDebitoExistem()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -91,20 +79,18 @@ public class LeitorExtratoNedBankTests
         Assert.IsNotEmpty(debitos);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_DatasCorretas()
+    [TestMethod]
+    public void LerExtrato_DatasCorretas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto NedBank não disponível");
-
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(12, extrato.DataInicio.Month);
+        Assert.AreEqual(1, extrato.DataInicio.Month);
         Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 
-    [Fact]
+    [TestMethod]
     public void SuportaArquivo_ExtensaoXlsx_RetornaTrue()
     {
         LeitorExtratoNedBank leitor = new();
