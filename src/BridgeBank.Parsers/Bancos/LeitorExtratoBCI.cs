@@ -1,10 +1,10 @@
 using System.Globalization;
-using BridgeBank.Parsers.Excel;
-using BridgeBank.Parsers.Util;
+using Simansoft.BridgeBank.Parsers.Util;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do BCI (Banco Comercial e de Investimentos).
@@ -38,7 +38,7 @@ public class LeitorExtratoBCI : LeitorExcelBase
             Banco = "BCI",
             NumeroConta = ObterTextoCelula(folha, LinhaConta, 1),
             SaldoInicial = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaSaldoAnterior, 1)),
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
         var ultimaLinha = ObterUltimaLinha(folha);

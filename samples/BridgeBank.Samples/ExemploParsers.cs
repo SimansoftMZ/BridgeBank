@@ -1,6 +1,6 @@
-using BridgeBank.Parsers.Bancos;
-using BridgeBank.Parsers.Interfaces;
+using Simansoft.BridgeBank.Parsers.Bancos;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Interfaces;
 
 namespace BridgeBank.Samples;
 
@@ -34,16 +34,16 @@ public static class ExemploParsers
         Console.WriteLine();
         Console.Write("Escolha o banco: ");
 
-        var opcao = Console.ReadLine()?.Trim() ?? "";
+        string opcao = Console.ReadLine()?.Trim() ?? "";
 
-        if (!LeitoresDisponiveis.TryGetValue(opcao, out var criarLeitor))
+        if (!LeitoresDisponiveis.TryGetValue(opcao, out Func<ILeitorExtrato>? criarLeitor))
         {
             Console.WriteLine("Opção inválida.");
             return;
         }
 
         Console.Write("Caminho do ficheiro de extracto: ");
-        var caminho = Console.ReadLine()?.Trim()?.Trim('"') ?? "";
+        string caminho = Console.ReadLine()?.Trim()?.Trim('"') ?? "";
 
         if (!File.Exists(caminho))
         {
@@ -51,7 +51,7 @@ public static class ExemploParsers
             return;
         }
 
-        var leitor = criarLeitor();
+        ILeitorExtrato leitor = criarLeitor();
 
         if (!leitor.SuportaArquivo(caminho))
         {
@@ -61,7 +61,7 @@ public static class ExemploParsers
 
         try
         {
-            var extrato = leitor.LerExtrato(caminho);
+            ExtratoBancario extrato = leitor.LerExtrato(caminho);
             MostrarExtrato(extrato);
         }
         catch (Exception ex)
@@ -81,24 +81,24 @@ public static class ExemploParsers
         Console.WriteLine($"Transacções:   {extrato.Transacoes.Count}");
         Console.WriteLine();
 
-        var creditos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito).ToList();
-        var debitos = extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito).ToList();
+        List<Transacao> creditos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito)];
+        List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
 
         Console.WriteLine($"  Créditos: {creditos.Count} ({creditos.Sum(t => t.Valor):N2} MZN)");
         Console.WriteLine($"  Débitos:  {debitos.Count} ({debitos.Sum(t => t.Valor):N2} MZN)");
         Console.WriteLine();
 
         // Mostrar primeiras transacções
-        var limite = Math.Min(extrato.Transacoes.Count, 10);
+        int limite = Math.Min(extrato.Transacoes.Count, 10);
         Console.WriteLine($"Primeiras {limite} transacções:");
         Console.WriteLine(new string('-', 90));
         Console.WriteLine($"{"Data",-12} {"Tipo",-8} {"Valor",14} {"Descrição",-50}");
         Console.WriteLine(new string('-', 90));
 
-        foreach (var t in extrato.Transacoes.Take(limite))
+        foreach (Transacao? t in extrato.Transacoes.Take(limite))
         {
-            var tipo = t.Tipo == TipoTransacao.Credito ? "CR" : "DB";
-            var descricao = t.Descricao.Length > 50 ? t.Descricao[..47] + "..." : t.Descricao;
+            string tipo = t.Tipo == TipoTransacao.Credito ? "CR" : "DB";
+            string descricao = t.Descricao.Length > 50 ? t.Descricao[..47] + "..." : t.Descricao;
             Console.WriteLine($"{t.Data:dd/MM/yyyy}   {tipo,-8} {t.Valor,14:N2} {descricao,-50}");
         }
 

@@ -1,9 +1,9 @@
 using System.Globalization;
-using BridgeBank.Parsers.Excel;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do NedBank (Nedbank Moçambique).
@@ -37,7 +37,7 @@ public class LeitorExtratoNedBank : LeitorExcelBase
             Banco = "NedBank",
             NumeroConta = ObterNumeroConta(folha),
             SaldoInicial = (decimal)ObterNumericoCelula(folha, LinhaSaldoAbertura, ColunaSaldo),
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)

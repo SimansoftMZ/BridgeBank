@@ -1,4 +1,4 @@
-using BridgeBank.Generators.Bancos;
+using Simansoft.BridgeBank.Generators.Bancos;
 using Simansoft.BridgeBank.Generators.Models;
 
 namespace BridgeBank.Samples;
@@ -21,10 +21,10 @@ public static class ExemploGeradores
         Console.WriteLine();
         Console.Write("Escolha o formato: ");
 
-        var opcao = Console.ReadLine()?.Trim() ?? "";
+        string opcao = Console.ReadLine()?.Trim() ?? "";
 
         Console.Write("Pasta de destino (Enter = pasta temporária): ");
-        var pasta = Console.ReadLine()?.Trim()?.Trim('"');
+        string? pasta = Console.ReadLine()?.Trim()?.Trim('"');
         if (string.IsNullOrEmpty(pasta))
             pasta = Path.GetTempPath();
 
@@ -34,7 +34,7 @@ public static class ExemploGeradores
             return;
         }
 
-        var pagamentos = CriarPagamentosSimulados();
+        List<Pagamento> pagamentos = CriarPagamentosSimulados();
 
         Console.WriteLine();
         Console.WriteLine($"Pagamentos a processar: {pagamentos.Count}");
@@ -65,8 +65,8 @@ public static class ExemploGeradores
 
     private static void GerarMillenniumBIM(List<Pagamento> pagamentos, string pasta)
     {
-        var gerador = new GeradorPagamentoMillenniumBIM();
-        var caminho = Path.Combine(pasta, "pagamentos_mbim.csv");
+        GeradorPagamentoMillenniumBIM gerador = new();
+        string caminho = Path.Combine(pasta, "pagamentos_mbim.csv");
         gerador.GerarFicheiro(pagamentos, caminho);
         Console.WriteLine($"[CSV] {caminho}");
         MostrarConteudo(caminho);
@@ -74,8 +74,8 @@ public static class ExemploGeradores
 
     private static void GerarStandardBank(List<Pagamento> pagamentos, string pasta)
     {
-        var gerador = new GeradorPagamentoStandardBank();
-        var caminho = Path.Combine(pasta, "pagamentos_stdbank.xml");
+        GeradorPagamentoStandardBank gerador = new();
+        string caminho = Path.Combine(pasta, "pagamentos_stdbank.xml");
         gerador.GerarFicheiro(pagamentos, caminho);
         Console.WriteLine($"[XML] {caminho}");
         MostrarConteudo(caminho);
@@ -83,8 +83,8 @@ public static class ExemploGeradores
 
     private static void GerarBCI(List<Pagamento> pagamentos, string pasta)
     {
-        var gerador = new GeradorPagamentoBCI();
-        var caminho = Path.Combine(pasta, "pagamentos_bci.txt");
+        GeradorPagamentoBCI gerador = new();
+        string caminho = Path.Combine(pasta, "pagamentos_bci.txt");
         gerador.GerarFicheiro(pagamentos, caminho);
         Console.WriteLine($"[TXT] {caminho}");
         MostrarConteudo(caminho);
@@ -92,9 +92,9 @@ public static class ExemploGeradores
 
     private static void MostrarConteudo(string caminho, int maxLinhas = 12)
     {
-        var linhas = File.ReadAllLines(caminho);
+        string[] linhas = File.ReadAllLines(caminho);
         Console.WriteLine(new string('-', 60));
-        foreach (var linha in linhas.Take(maxLinhas))
+        foreach (string? linha in linhas.Take(maxLinhas))
             Console.WriteLine(linha);
         if (linhas.Length > maxLinhas)
             Console.WriteLine($"  ... ({linhas.Length - maxLinhas} linhas omitidas)");

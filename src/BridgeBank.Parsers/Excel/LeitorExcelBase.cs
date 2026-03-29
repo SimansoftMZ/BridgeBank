@@ -1,9 +1,9 @@
 using System.Globalization;
-using BridgeBank.Parsers.Interfaces;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Interfaces;
 
-namespace BridgeBank.Parsers.Excel;
+namespace Simansoft.BridgeBank.Parsers.Excel;
 
 /// <summary>
 /// Leitor base para extratos em formato Excel (.xls e .xlsx) utilizando NPOI.

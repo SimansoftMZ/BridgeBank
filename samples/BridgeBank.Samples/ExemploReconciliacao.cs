@@ -1,5 +1,5 @@
-using BridgeBank.Core;
-using BridgeBank.Core.Strategies;
+using Simansoft.BridgeBank.Core;
+using Simansoft.BridgeBank.Core.Strategies;
 using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Samples;
@@ -15,28 +15,28 @@ public static class ExemploReconciliacao
         Console.WriteLine(new string('-', 50));
         Console.WriteLine();
 
-        var transacoes = CriarTransacoesSimuladas();
-        var lancamentos = CriarLancamentosSimulados();
+        List<Transacao> transacoes = CriarTransacoesSimuladas();
+        List<LancamentoERP> lancamentos = CriarLancamentosSimulados();
 
         Console.WriteLine($"Transacções bancárias: {transacoes.Count}");
         Console.WriteLine($"Lançamentos ERP:       {lancamentos.Count}");
         Console.WriteLine();
 
         // Configurar motor com as 3 estratégias
-        var motor = new MotorReconciliacao();
+        MotorReconciliacao motor = new();
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorValorEData(toleranciaDias: 3));
         motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorDescricao());
 
-        var resultados = motor.Reconciliar(transacoes, lancamentos);
+        List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Mostrar resultados
         Console.WriteLine("Resultados:");
         Console.WriteLine(new string('-', 80));
 
-        foreach (var r in resultados)
+        foreach (ResultadoReconciliacao r in resultados)
         {
-            var status = r.TipoCorrespondencia != TipoCorrespondencia.Nenhuma
+            string status = r.TipoCorrespondencia != TipoCorrespondencia.Nenhuma
                 ? $"[OK] {r.TipoCorrespondencia} ({r.NivelConfianca:P0})"
                 : "[--] Não reconciliada";
 
@@ -49,7 +49,7 @@ public static class ExemploReconciliacao
         Console.WriteLine(new string('-', 80));
 
         // Estatísticas
-        var reconciliadas = resultados.Count(r => r.TipoCorrespondencia != TipoCorrespondencia.Nenhuma);
+        int reconciliadas = resultados.Count(r => r.TipoCorrespondencia != TipoCorrespondencia.Nenhuma);
         Console.WriteLine();
         Console.WriteLine($"Total:           {resultados.Count}");
         Console.WriteLine($"Reconciliadas:   {reconciliadas}");

@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
-using BridgeBank.Parsers.Excel;
-using BridgeBank.Parsers.Util;
+using Simansoft.BridgeBank.Parsers.Util;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do Standard Bank.
@@ -32,28 +32,28 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
-        var ultimaLinha = ObterUltimaLinha(folha);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
+        int ultimaLinha = ObterUltimaLinha(folha);
         int ultimaLinhaTransacoesReal = LinhaInicioTransacoes;
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "Standard Bank",
             NumeroConta = ObterNumeroConta(folha),
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
-            var textoData = ObterTextoCelula(folha, linha, ColunaData);
+            string textoData = ObterTextoCelula(folha, linha, ColunaData);
 
             if (string.IsNullOrWhiteSpace(textoData))
                 break;
             if (textoData.StartsWith("Copyright", StringComparison.OrdinalIgnoreCase))
                 break;
 
-            var transacao = ExtrairTransacao(folha, linha, textoData);
+            Transacao? transacao = ExtrairTransacao(folha, linha, textoData);
             if (transacao != null)
             {
                 extrato.Transacoes.Add(transacao);
@@ -69,9 +69,9 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
             extrato.SaldoFinal = ParseadorNumerico.ParsearValorMonetario(
                 ObterTextoCelula(folha, LinhaInicioTransacoes, ColunaSaldo));
 
-            var saldoUltimaTransacao = ParseadorNumerico.ParsearValorMonetario(
+            decimal saldoUltimaTransacao = ParseadorNumerico.ParsearValorMonetario(
                 ObterTextoCelula(folha, ultimaLinhaTransacoesReal, ColunaSaldo));
-            var ultimaTransacao = extrato.Transacoes[^1];
+            Transacao ultimaTransacao = extrato.Transacoes[^1];
             extrato.SaldoInicial = saldoUltimaTransacao
                 - (ultimaTransacao.Tipo == TipoTransacao.Credito ? ultimaTransacao.Valor : -ultimaTransacao.Valor);
         }
@@ -82,14 +82,14 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
     private static Transacao? ExtrairTransacao(ISheet folha, int linha, string textoData)
     {
         if (!DateTime.TryParseExact(textoData, ["dd-MM-yyyy", "dd/MM/yyyy"],
-            CultureInfo.InvariantCulture, DateTimeStyles.None, out var data))
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
             return null;
 
-        var textoDebito = ObterTextoCelula(folha, linha, ColunaDebito);
-        var textoCredito = ObterTextoCelula(folha, linha, ColunaCredito);
-        var isDebito = !string.IsNullOrEmpty(textoDebito);
+        string textoDebito = ObterTextoCelula(folha, linha, ColunaDebito);
+        string textoCredito = ObterTextoCelula(folha, linha, ColunaCredito);
+        bool isDebito = !string.IsNullOrEmpty(textoDebito);
 
-        var valor = isDebito
+        decimal valor = isDebito
             ? ParseadorNumerico.ParsearValorMonetario(textoDebito)
             : ParseadorNumerico.ParsearValorMonetario(textoCredito);
 
@@ -106,8 +106,8 @@ public partial class LeitorExtratoStandardBank : LeitorExcelBase
 
     private static string ObterNumeroConta(ISheet folha)
     {
-        var texto = ObterTextoCelula(folha, LinhaInfoConta, 0);
-        var match = ContaRegex().Match(texto);
+        string texto = ObterTextoCelula(folha, LinhaInfoConta, 0);
+        Match match = ContaRegex().Match(texto);
         return match.Success ? match.Groups["conta"].Value : "N/A";
     }
 

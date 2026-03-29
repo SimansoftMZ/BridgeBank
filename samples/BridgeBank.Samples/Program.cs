@@ -14,7 +14,7 @@ while (true)
     Console.WriteLine();
     Console.Write("Escolha uma opção: ");
 
-    var opcao = Console.ReadLine()?.Trim();
+    string? opcao = Console.ReadLine()?.Trim();
 
     Console.WriteLine();
 

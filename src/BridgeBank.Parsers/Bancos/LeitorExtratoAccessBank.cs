@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
-using BridgeBank.Parsers.Excel;
-using BridgeBank.Parsers.Util;
+using Simansoft.BridgeBank.Parsers.Util;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do Access Bank Moçambique.
@@ -47,7 +47,7 @@ public partial class LeitorExtratoAccessBank : LeitorExcelBase
             DataFim = dataFim,
             SaldoInicial = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaMetaSaldoAbertura, 7)),
             SaldoFinal = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaMetaSaldoFecho, 7)),
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
         var ultimaLinha = ObterUltimaLinha(folha);

@@ -1,9 +1,9 @@
 using System.Globalization;
-using BridgeBank.Parsers.Excel;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do M-Pesa (Vodacom Moçambique).

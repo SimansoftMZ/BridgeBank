@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
-using BridgeBank.Parsers.Excel;
-using BridgeBank.Parsers.Util;
+using Simansoft.BridgeBank.Parsers.Util;
 using NPOI.SS.UserModel;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Parsers.Excel;
 
-namespace BridgeBank.Parsers.Bancos;
+namespace Simansoft.BridgeBank.Parsers.Bancos;
 
 /// <summary>
 /// Leitor de extratos do Millennium BIM.
@@ -32,12 +32,12 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
 
     public override ExtratoBancario LerExtrato(string caminhoArquivo)
     {
-        using var workbook = AbrirFicheiro(caminhoArquivo);
-        var folha = workbook.GetSheetAt(0);
+        using IWorkbook workbook = AbrirFicheiro(caminhoArquivo);
+        ISheet folha = workbook.GetSheetAt(0);
 
-        var (conta, dataInicio, dataFim) = ExtrairInfoConta(folha);
+        (string conta, DateTime dataInicio, DateTime dataFim) = ExtrairInfoConta(folha);
 
-        var extrato = new ExtratoBancario
+        ExtratoBancario extrato = new()
         {
             Banco = "Millennium BIM",
             NumeroConta = conta,
@@ -45,16 +45,16 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
             DataFim = dataFim,
             SaldoInicial = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaSaldoInicial, 8)),
             SaldoFinal = ParseadorNumerico.ParsearValorMonetario(ObterTextoCelula(folha, LinhaSaldoFinal, 8)),
-            Transacoes = new List<Transacao>()
+            Transacoes = []
         };
 
-        var ultimaLinha = ObterUltimaLinha(folha);
+        int ultimaLinha = ObterUltimaLinha(folha);
         for (int linha = LinhaInicioTransacoes; linha <= ultimaLinha; linha++)
         {
             if (CelulaVazia(folha, linha, ColunaDataTransacao))
                 continue;
 
-            var transacao = ExtrairTransacao(folha, linha);
+            Transacao? transacao = ExtrairTransacao(folha, linha);
             if (transacao != null)
                 extrato.Transacoes.Add(transacao);
         }
@@ -64,22 +64,22 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
 
     private static Transacao? ExtrairTransacao(ISheet folha, int linha)
     {
-        var data = ObterDataCelula(folha, linha, ColunaDataTransacao);
+        DateTime? data = ObterDataCelula(folha, linha, ColunaDataTransacao);
         if (data == null)
         {
-            var textoData = ObterTextoCelula(folha, linha, ColunaDataTransacao);
+            string textoData = ObterTextoCelula(folha, linha, ColunaDataTransacao);
             if (DateTime.TryParseExact(textoData, ["dd/MM/yyyy", "dd-MM-yyyy"],
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
                 data = parsed;
         }
 
         if (data == null)
             return null;
 
-        var debito = ObterNumericoCelula(folha, linha, ColunaDebito);
-        var credito = ObterNumericoCelula(folha, linha, ColunaCredito);
-        var isCredito = credito > 0;
-        var valor = isCredito ? credito : Math.Abs(debito);
+        double debito = ObterNumericoCelula(folha, linha, ColunaDebito);
+        double credito = ObterNumericoCelula(folha, linha, ColunaCredito);
+        bool isCredito = credito > 0;
+        double valor = isCredito ? credito : Math.Abs(debito);
 
         return new Transacao
         {
@@ -93,15 +93,15 @@ public partial class LeitorExtratoMillenniumBIM : LeitorExcelBase
 
     private static (string conta, DateTime dataInicio, DateTime dataFim) ExtrairInfoConta(ISheet folha)
     {
-        var texto = ObterTextoCelula(folha, LinhaInfoConta, 2);
-        var match = InfoContaRegex().Match(texto);
+        string texto = ObterTextoCelula(folha, LinhaInfoConta, 2);
+        Match match = InfoContaRegex().Match(texto);
         if (match.Success)
         {
-            var conta = match.Groups["conta"].Value;
+            string conta = match.Groups["conta"].Value;
             DateTime.TryParseExact(match.Groups["inicio"].Value, "dd-MM-yyyy",
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicio);
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime inicio);
             DateTime.TryParseExact(match.Groups["fim"].Value, "dd-MM-yyyy",
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out var fim);
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fim);
             return (conta, inicio, fim);
         }
         return ("N/A", DateTime.MinValue, DateTime.MinValue);

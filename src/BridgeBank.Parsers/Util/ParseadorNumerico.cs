@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace BridgeBank.Parsers.Util;
+namespace Simansoft.BridgeBank.Parsers.Util;
 
 /// <summary>
 /// Utilitário para parsing de valores monetários em formatos variados

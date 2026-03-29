@@ -1,6 +1,6 @@
 using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Parsers.Interfaces;
+namespace Simansoft.BridgeBank.Parsers.Interfaces;
 
 /// <summary>
 /// Interface para leitores de extrato bancário
