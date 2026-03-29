@@ -22,8 +22,8 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("M-Pesa", extrato.Banco);
-        Assert.NotEmpty(extrato.NumeroConta);
+        Assert.AreEqual("M-Pesa", extrato.Banco);
+        Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -34,7 +34,7 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("901977", extrato.NumeroConta);
+        Assert.AreEqual("901977", extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -45,8 +45,8 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(new DateTime(2025, 12, 1), extrato.DataInicio.Date);
-        Assert.Equal(new DateTime(2025, 12, 17), extrato.DataFim.Date);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio.Date);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim.Date);
     }
 
     [SkippableFact]
@@ -57,13 +57,13 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.NotEmpty(extrato.Transacoes);
-        Assert.All(extrato.Transacoes, t =>
+        Assert.IsNotEmpty(extrato.Transacoes);
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotEmpty(t.Id);
-            Assert.NotEqual(DateTime.MinValue, t.Data);
-            Assert.True(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
-        });
+            Assert.IsNotEmpty(t.Id);
+            Assert.AreNotEqual(DateTime.MinValue, t.Data);
+            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
+        };
     }
 
     [SkippableFact]
@@ -77,8 +77,8 @@ public class LeitorExtratoMPesaTests
         List<Transacao> creditos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito)];
         List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
 
-        Assert.NotEmpty(creditos);
-        Assert.NotEmpty(debitos);
+        Assert.IsNotEmpty(creditos);
+        Assert.IsNotEmpty(debitos);
     }
 
     [SkippableFact]
@@ -89,18 +89,18 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.All(extrato.Transacoes, t =>
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotNull(t.Referencia);
-            Assert.NotEmpty(t.Referencia);
-        });
+            Assert.IsNotNull(t.Referencia);
+            Assert.IsNotEmpty(t.Referencia);
+        }
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoMPesa leitor = new();
-        Assert.True(leitor.SuportaArquivo("extracto.xls"));
-        Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xls"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }

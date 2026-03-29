@@ -22,8 +22,8 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("Standard Bank", extrato.Banco);
-        Assert.NotEmpty(extrato.NumeroConta);
+        Assert.AreEqual("Standard Bank", extrato.Banco);
+        Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -45,14 +45,15 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.NotEmpty(extrato.Transacoes);
-        Assert.All(extrato.Transacoes, t =>
+        Assert.IsNotEmpty(extrato.Transacoes);
+
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotEmpty(t.Id);
-            Assert.NotEqual(DateTime.MinValue, t.Data);
-            Assert.True(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
-            Assert.NotEmpty(t.Descricao);
-        });
+            Assert.IsNotEmpty(t.Id);
+            Assert.AreNotEqual(DateTime.MinValue, t.Data);
+            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
+            Assert.IsNotEmpty(t.Descricao);
+        };
     }
 
     [SkippableFact]
@@ -64,10 +65,10 @@ public class LeitorExtratoStandardBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.Equal(new DateTime(2025, 12, 15), primeira.Data);
-        Assert.Equal(3180.00m, primeira.Valor);
-        Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
-        Assert.NotNull(primeira.Referencia);
+        Assert.AreEqual(new DateTime(2025, 12, 15), primeira.Data);
+        Assert.AreEqual(3180.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
+        Assert.IsNotNull(primeira.Referencia);
         Assert.Contains("FT253498WH0B", primeira.Referencia);
     }
 
@@ -79,9 +80,9 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(2025, extrato.DataInicio.Year);
-        Assert.Equal(12, extrato.DataInicio.Month);
-        Assert.True(extrato.DataFim >= extrato.DataInicio);
+        Assert.AreEqual(2025, extrato.DataInicio.Year);
+        Assert.AreEqual(12, extrato.DataInicio.Month);
+        Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 
     [SkippableFact]
@@ -92,14 +93,13 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.DoesNotContain(extrato.Transacoes, t =>
-            t.Descricao.Contains("Copyright", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(t => t.Descricao.Contains("Copyright", StringComparison.OrdinalIgnoreCase), extrato.Transacoes);
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXlsx_RetornaTrue()
     {
         LeitorExtratoStandardBank leitor = new();
-        Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }

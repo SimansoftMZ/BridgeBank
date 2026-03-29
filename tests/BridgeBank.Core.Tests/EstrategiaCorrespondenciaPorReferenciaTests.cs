@@ -28,10 +28,10 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
         ResultadoCorrespondencia? resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
 
         // Assert
-        Assert.NotNull(resultado);
-        Assert.Equal("1", resultado.Lancamento.Id);
-        Assert.Equal(TipoCorrespondencia.PorReferencia, resultado.Tipo);
-        Assert.Equal(1.0, resultado.NivelConfianca);
+        Assert.IsNotNull(resultado);
+        Assert.AreEqual("1", resultado.Lancamento.Id);
+        Assert.AreEqual(TipoCorrespondencia.PorReferencia, resultado.Tipo);
+        Assert.AreEqual(1.0, resultado.NivelConfianca);
     }
 
     [Fact]
@@ -55,6 +55,6 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
         ResultadoCorrespondencia? resultado = estrategia.TentarCorrespondencia(transacao, lancamentos);
 
         // Assert
-        Assert.Null(resultado);
+        Assert.IsNull(resultado);
     }
 }

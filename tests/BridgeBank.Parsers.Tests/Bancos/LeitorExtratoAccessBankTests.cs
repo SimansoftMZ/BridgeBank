@@ -22,8 +22,8 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("Access Bank", extrato.Banco);
-        Assert.NotEmpty(extrato.NumeroConta);
+        Assert.AreEqual("Access Bank", extrato.Banco);
+        Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -34,7 +34,7 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("00101010001133", extrato.NumeroConta);
+        Assert.AreEqual("00101010001133", extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -45,8 +45,8 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(new DateTime(2025, 12, 1), extrato.DataInicio);
-        Assert.Equal(new DateTime(2025, 12, 17), extrato.DataFim);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim);
     }
 
     [SkippableFact]
@@ -57,8 +57,8 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(5488800.44m, extrato.SaldoInicial);
-        Assert.Equal(5299234.28m, extrato.SaldoFinal);
+        Assert.AreEqual(5488800.44m, extrato.SaldoInicial);
+        Assert.AreEqual(5299234.28m, extrato.SaldoFinal);
     }
 
     [SkippableFact]
@@ -69,14 +69,14 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.NotEmpty(extrato.Transacoes);
-        Assert.All(extrato.Transacoes, t =>
+        Assert.IsNotEmpty(extrato.Transacoes);
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotEmpty(t.Id);
-            Assert.NotEqual(DateTime.MinValue, t.Data);
-            Assert.True(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
-            Assert.NotEmpty(t.Descricao);
-        });
+            Assert.IsFalse(string.IsNullOrEmpty(t.Id));
+            Assert.AreNotEqual(DateTime.MinValue, t.Data);
+            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
+            Assert.IsFalse(string.IsNullOrEmpty(t.Descricao));
+        }
     }
 
     [SkippableFact]
@@ -88,9 +88,9 @@ public class LeitorExtratoAccessBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.Equal(new DateTime(2025, 12, 1), primeira.Data);
-        Assert.Equal(4400.00m, primeira.Valor);
-        Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
+        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
+        Assert.AreEqual(4400.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
         Assert.Contains("DEPÓSITO", primeira.Descricao);
     }
 
@@ -103,15 +103,18 @@ public class LeitorExtratoAccessBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
-        Assert.NotEmpty(debitos);
-        Assert.All(debitos, d => Assert.Contains("TRANSFERENCIA", d.Descricao));
+        Assert.IsNotEmpty(debitos);
+        foreach (Transacao d in debitos)
+        {
+            Assert.Contains("TRANSFERENCIA", d.Descricao);
+        }
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoAccessBank leitor = new();
-        Assert.True(leitor.SuportaArquivo("extracto.xls"));
-        Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xls"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }

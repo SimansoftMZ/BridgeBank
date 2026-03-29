@@ -22,9 +22,9 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("BCI", extrato.Banco);
-        Assert.NotEmpty(extrato.NumeroConta);
-        Assert.NotEqual("N/A", extrato.NumeroConta);
+        Assert.AreEqual("BCI", extrato.Banco);
+        Assert.IsNotEmpty(extrato.NumeroConta);
+        Assert.AreNotEqual("N/A", extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -35,7 +35,7 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("1242812610003", extrato.NumeroConta);
+        Assert.AreEqual("1242812610003", extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -46,7 +46,7 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(200.00m, extrato.SaldoInicial);
+        Assert.AreEqual(200.00m, extrato.SaldoInicial);
     }
 
     [SkippableFact]
@@ -57,14 +57,14 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.NotEmpty(extrato.Transacoes);
-        Assert.All(extrato.Transacoes, t =>
+        Assert.IsNotEmpty(extrato.Transacoes);
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotEmpty(t.Id);
-            Assert.NotEqual(DateTime.MinValue, t.Data);
-            Assert.True(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
-            Assert.NotEmpty(t.Descricao);
-        });
+            Assert.IsNotEmpty(t.Id);
+            Assert.AreNotEqual(DateTime.MinValue, t.Data);
+            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
+            Assert.IsNotEmpty(t.Descricao);
+        }
     }
 
     [SkippableFact]
@@ -76,9 +76,9 @@ public class LeitorExtratoBCITests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.Equal(new DateTime(2025, 12, 1), primeira.Data);
-        Assert.Equal(4400.00m, primeira.Valor);
-        Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
+        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
+        Assert.AreEqual(4400.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
         Assert.Contains("Pag. Serv.", primeira.Descricao);
     }
 
@@ -92,7 +92,7 @@ public class LeitorExtratoBCITests
 
         // A segunda transacção é uma comissão (débito)
         Transacao comissao = extrato.Transacoes[1];
-        Assert.Equal(TipoTransacao.Debito, comissao.Tipo);
+        Assert.AreEqual(TipoTransacao.Debito, comissao.Tipo);
         Assert.Contains("Comissão", comissao.Descricao);
     }
 
@@ -104,24 +104,24 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(2025, extrato.DataInicio.Year);
-        Assert.Equal(12, extrato.DataInicio.Month);
-        Assert.True(extrato.DataFim >= extrato.DataInicio);
+        Assert.AreEqual(2025, extrato.DataInicio.Year);
+        Assert.AreEqual(12, extrato.DataInicio.Month);
+        Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoBCI leitor = new();
-        Assert.True(leitor.SuportaArquivo("extracto.xls"));
-        Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xls"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoCsv_RetornaFalse()
     {
         LeitorExtratoBCI leitor = new();
-        Assert.False(leitor.SuportaArquivo("extracto.csv"));
-        Assert.False(leitor.SuportaArquivo("extracto.pdf"));
+        Assert.IsFalse(leitor.SuportaArquivo("extracto.csv"));
+        Assert.IsFalse(leitor.SuportaArquivo("extracto.pdf"));
     }
 }

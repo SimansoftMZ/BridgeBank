@@ -37,11 +37,11 @@ public class MotorReconciliacaoTests
         List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
-        Assert.Single(resultados);
-        Assert.Equal("T1", resultados[0].Transacao.Id);
-        Assert.NotNull(resultados[0].LancamentoCorrespondente);
-        Assert.Equal("L1", resultados[0].LancamentoCorrespondente!.Id);
-        Assert.Equal(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
+        Assert.ContainsSingle(resultados);
+        Assert.AreEqual("T1", resultados[0].Transacao.Id);
+        Assert.IsNotNull(resultados[0].LancamentoCorrespondente);
+        Assert.AreEqual("L1", resultados[0].LancamentoCorrespondente!.Id);
+        Assert.AreEqual(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
     }
 
     [Fact]
@@ -75,9 +75,9 @@ public class MotorReconciliacaoTests
         List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
-        Assert.Single(resultados);
-        Assert.Null(resultados[0].LancamentoCorrespondente);
-        Assert.Equal(TipoCorrespondencia.Nenhuma, resultados[0].TipoCorrespondencia);
+        Assert.ContainsSingle(resultados);
+        Assert.IsNull(resultados[0].LancamentoCorrespondente);
+        Assert.AreEqual(TipoCorrespondencia.Nenhuma, resultados[0].TipoCorrespondencia);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class MotorReconciliacaoTests
         List<ResultadoReconciliacao> resultados = motor.Reconciliar(transacoes, lancamentos);
 
         // Assert
-        Assert.Single(resultados);
-        Assert.Equal(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
+        Assert.ContainsSingle(resultados);
+        Assert.AreEqual(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
     }
 }

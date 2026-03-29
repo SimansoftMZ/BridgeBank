@@ -18,7 +18,7 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_FormatoPortugues_RetornaValorCorreto(string texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
     [Theory]
@@ -28,7 +28,7 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_ComSufixoMoeda_RetornaValorCorreto(string texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
     [Theory]
@@ -38,7 +38,7 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_FormatoComPontos_RetornaValorCorreto(string texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
     [Theory]
@@ -48,7 +48,7 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_ComEspacosComoMilhares_RetornaValorCorreto(string texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
     [Theory]
@@ -58,7 +58,7 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_ValorVazioOuNulo_RetornaZero(string? texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 
     [Theory]
@@ -67,6 +67,6 @@ public class ParseadorNumericoTests
     public void ParsearValorMonetario_FormatoInternacional_RetornaValorCorreto(string texto, string esperado)
     {
         decimal resultado = ParseadorNumerico.ParsearValorMonetario(texto);
-        Assert.Equal(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
+        Assert.AreEqual(decimal.Parse(esperado, CultureInfo.InvariantCulture), resultado);
     }
 }

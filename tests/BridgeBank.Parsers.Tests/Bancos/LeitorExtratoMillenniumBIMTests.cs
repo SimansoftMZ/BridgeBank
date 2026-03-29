@@ -22,8 +22,8 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("Millennium BIM", extrato.Banco);
-        Assert.NotEmpty(extrato.NumeroConta);
+        Assert.AreEqual("Millennium BIM", extrato.Banco);
+        Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -34,7 +34,7 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal("125986123", extrato.NumeroConta);
+        Assert.AreEqual("125986123", extrato.NumeroConta);
     }
 
     [SkippableFact]
@@ -45,8 +45,8 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(new DateTime(2025, 12, 1), extrato.DataInicio);
-        Assert.Equal(new DateTime(2025, 12, 17), extrato.DataFim);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim);
     }
 
     [SkippableFact]
@@ -57,8 +57,8 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Equal(8965395.17m, extrato.SaldoInicial);
-        Assert.Equal(3371027.03m, extrato.SaldoFinal);
+        Assert.AreEqual(8965395.17m, extrato.SaldoInicial);
+        Assert.AreEqual(3371027.03m, extrato.SaldoFinal);
     }
 
     [SkippableFact]
@@ -69,13 +69,13 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.NotEmpty(extrato.Transacoes);
-        Assert.All(extrato.Transacoes, t =>
+        Assert.IsNotEmpty(extrato.Transacoes);
+        foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.NotEmpty(t.Id);
-            Assert.NotEqual(DateTime.MinValue, t.Data);
-            Assert.True(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
-        });
+            Assert.IsNotEmpty(t.Id);
+            Assert.AreNotEqual(DateTime.MinValue, t.Data);
+            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
+        }
     }
 
     [SkippableFact]
@@ -87,9 +87,9 @@ public class LeitorExtratoMillenniumBIMTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.Equal(new DateTime(2025, 12, 16), primeira.Data);
-        Assert.Equal(132829.99m, primeira.Valor);
-        Assert.Equal(TipoTransacao.Credito, primeira.Tipo);
+        Assert.AreEqual(new DateTime(2025, 12, 16), primeira.Data);
+        Assert.AreEqual(132829.99m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
         Assert.Contains("ENTIDADE 96001 CREDITO", primeira.Descricao);
     }
 
@@ -102,13 +102,13 @@ public class LeitorExtratoMillenniumBIMTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
-        Assert.NotEmpty(debitos);
+        Assert.IsNotEmpty(debitos);
     }
 
     [Fact]
     public void SuportaArquivo_ExtensaoXlsx_RetornaTrue()
     {
         LeitorExtratoMillenniumBIM leitor = new();
-        Assert.True(leitor.SuportaArquivo("extracto.xlsx"));
+        Assert.IsTrue(leitor.SuportaArquivo("extracto.xlsx"));
     }
 }

@@ -30,7 +30,7 @@ public class GeradorPagamentoMillenniumBIMTests
 
         // Assert
         string[] linhas = File.ReadAllLines(caminhoTemp);
-        Assert.Equal(2, linhas.Length);
+        Assert.HasCount(2, linhas);
         Assert.Contains("Data;Beneficiario", linhas[0]);
         Assert.Contains("Fornecedor A", linhas[1]);
 
