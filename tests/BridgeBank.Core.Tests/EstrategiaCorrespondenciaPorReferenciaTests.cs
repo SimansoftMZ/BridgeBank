@@ -1,6 +1,5 @@
-using BridgeBank.Core.Models;
-using BridgeBank.Core.Strategies;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Strategies;
 
 namespace BridgeBank.Core.Tests;
 
@@ -21,7 +20,7 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
 
         var lancamentos = new List<LancamentoERP>
         {
-            new LancamentoERP { Id = "1", Referencia = "INV-001", Valor = 1000, Data = DateTime.Now }
+            new() { Id = "1", Referencia = "INV-001", Valor = 1000, Data = DateTime.Now }
         };
 
         // Act
@@ -48,7 +47,7 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
 
         var lancamentos = new List<LancamentoERP>
         {
-            new LancamentoERP { Id = "1", Referencia = "INV-001", Valor = 1000 }
+            new() { Id = "1", Referencia = "INV-001", Valor = 1000 }
         };
 
         // Act

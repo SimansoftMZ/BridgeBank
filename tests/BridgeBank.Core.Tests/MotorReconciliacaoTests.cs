@@ -1,6 +1,6 @@
-using BridgeBank.Core;
-using BridgeBank.Core.Strategies;
+using Simansoft.BridgeBank.Core;
 using Simansoft.BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Strategies;
 
 namespace BridgeBank.Core.Tests;
 
@@ -15,8 +15,7 @@ public class MotorReconciliacaoTests
 
         var transacoes = new List<Transacao>
         {
-            new Transacao
-            {
+            new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
@@ -26,8 +25,7 @@ public class MotorReconciliacaoTests
 
         var lancamentos = new List<LancamentoERP>
         {
-            new LancamentoERP
-            {
+            new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
@@ -55,8 +53,7 @@ public class MotorReconciliacaoTests
 
         var transacoes = new List<Transacao>
         {
-            new Transacao
-            {
+            new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
@@ -66,8 +63,7 @@ public class MotorReconciliacaoTests
 
         var lancamentos = new List<LancamentoERP>
         {
-            new LancamentoERP
-            {
+            new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
@@ -94,8 +90,7 @@ public class MotorReconciliacaoTests
 
         var transacoes = new List<Transacao>
         {
-            new Transacao
-            {
+            new() {
                 Id = "T1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
@@ -105,8 +100,7 @@ public class MotorReconciliacaoTests
 
         var lancamentos = new List<LancamentoERP>
         {
-            new LancamentoERP
-            {
+            new() {
                 Id = "L1",
                 Data = new DateTime(2026, 1, 1),
                 Valor = 1000,
