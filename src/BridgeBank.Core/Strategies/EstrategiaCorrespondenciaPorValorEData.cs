@@ -1,25 +1,19 @@
-using BridgeBank.Core.Interfaces;
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Interfaces;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core.Strategies;
+namespace Simansoft.BridgeBank.Core.Strategies;
 
 /// <summary>
 /// Estratégia de correspondência por valor e data
 /// </summary>
-public class EstrategiaCorrespondenciaPorValorEData : IEstrategiaCorrespondencia
+public class EstrategiaCorrespondenciaPorValorEData(
+    int toleranciaDias = 2,
+    decimal toleranciaValor = 0.01m) : IEstrategiaCorrespondencia
 {
-    private readonly int _toleranciaDias;
-    private readonly decimal _toleranciaValor;
+    private readonly int _toleranciaDias = toleranciaDias;
+    private readonly decimal _toleranciaValor = toleranciaValor;
 
     public int Prioridade => 90;
-
-    public EstrategiaCorrespondenciaPorValorEData(
-        int toleranciaDias = 2,
-        decimal toleranciaValor = 0.01m)
-    {
-        _toleranciaDias = toleranciaDias;
-        _toleranciaValor = toleranciaValor;
-    }
 
     public ResultadoCorrespondencia? TentarCorrespondencia(
         Transacao transacao,
@@ -34,7 +28,7 @@ public class EstrategiaCorrespondenciaPorValorEData : IEstrategiaCorrespondencia
                    diferencaValor <= _toleranciaValor;
         }).ToList();
 
-        if (!lancamentosCompativeis.Any())
+        if (lancamentosCompativeis.Count == 0)
             return null;
 
         var melhorLancamento = lancamentosCompativeis.OrderBy(l =>
@@ -53,10 +47,10 @@ public class EstrategiaCorrespondenciaPorValorEData : IEstrategiaCorrespondencia
             Lancamento = melhorLancamento,
             Tipo = TipoCorrespondencia.PorValorEData,
             NivelConfianca = Math.Max(0.5, nivelConfianca),
-            Observacoes = new List<string>
-            {
+            Observacoes =
+            [
                 $"Correspondência por valor e data (diferença: {diferencaDias} dias, {diferencaValor:C} MZN)"
-            }
+            ]
         };
     }
 }

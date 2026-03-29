@@ -1,4 +1,4 @@
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Interfaces;
 

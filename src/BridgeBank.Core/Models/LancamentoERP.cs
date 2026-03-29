@@ -1,4 +1,4 @@
-namespace BridgeBank.Core.Models;
+namespace Simansoft.BridgeBank.Core.Models;
 
 /// <summary>
 /// Representa um lançamento do sistema ERP

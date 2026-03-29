@@ -1,6 +1,6 @@
-using BridgeBank.Core.Models;
 using BridgeBank.Parsers.Bancos;
 using BridgeBank.Parsers.Interfaces;
+using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Samples;
 

@@ -1,5 +1,5 @@
-using BridgeBank.Core.Models;
 using BridgeBank.Parsers.Bancos;
+using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Tests.Bancos;
 

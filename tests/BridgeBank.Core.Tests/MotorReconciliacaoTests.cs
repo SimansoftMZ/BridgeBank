@@ -1,6 +1,6 @@
 using BridgeBank.Core;
-using BridgeBank.Core.Models;
 using BridgeBank.Core.Strategies;
+using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Core.Tests;
 

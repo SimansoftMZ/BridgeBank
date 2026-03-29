@@ -1,14 +1,14 @@
-using BridgeBank.Core.Interfaces;
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Interfaces;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core;
+namespace Simansoft.BridgeBank.Core;
 
 /// <summary>
 /// Motor de reconciliação bancária
 /// </summary>
 public class MotorReconciliacao : IMotorReconciliacao
 {
-    private readonly List<IEstrategiaCorrespondencia> _estrategias = new();
+    private readonly List<IEstrategiaCorrespondencia> _estrategias = [];
 
     public MotorReconciliacao()
     {

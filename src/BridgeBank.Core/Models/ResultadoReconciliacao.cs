@@ -1,4 +1,4 @@
-namespace BridgeBank.Core.Models;
+namespace Simansoft.BridgeBank.Core.Models;
 
 /// <summary>
 /// Resultado de uma reconciliação entre transação bancária e lançamento ERP
@@ -9,7 +9,7 @@ public class ResultadoReconciliacao
     public LancamentoERP? LancamentoCorrespondente { get; set; }
     public TipoCorrespondencia TipoCorrespondencia { get; set; }
     public double NivelConfianca { get; set; }
-    public List<string> Observacoes { get; set; } = new();
+    public List<string> Observacoes { get; set; } = [];
 }
 
 public enum TipoCorrespondencia

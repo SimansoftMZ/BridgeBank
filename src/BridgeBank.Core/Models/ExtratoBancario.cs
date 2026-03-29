@@ -1,4 +1,4 @@
-namespace BridgeBank.Core.Models;
+namespace Simansoft.BridgeBank.Core.Models;
 
 /// <summary>
 /// Representa um extrato bancário
@@ -11,5 +11,5 @@ public class ExtratoBancario
     public DateTime DataFim { get; set; }
     public decimal SaldoInicial { get; set; }
     public decimal SaldoFinal { get; set; }
-    public List<Transacao> Transacoes { get; set; } = new();
+    public List<Transacao> Transacoes { get; set; } = [];
 }

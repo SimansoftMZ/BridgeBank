@@ -1,21 +1,16 @@
-using BridgeBank.Core.Interfaces;
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Interfaces;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core.Strategies;
+namespace Simansoft.BridgeBank.Core.Strategies;
 
 /// <summary>
 /// Estratégia de correspondência por similaridade de descrição
 /// </summary>
-public class EstrategiaCorrespondenciaPorDescricao : IEstrategiaCorrespondencia
+public class EstrategiaCorrespondenciaPorDescricao(double limiarSimilaridade = 0.7) : IEstrategiaCorrespondencia
 {
-    private readonly double _limiarSimilaridade;
+    private readonly double _limiarSimilaridade = limiarSimilaridade;
 
     public int Prioridade => 80;
-
-    public EstrategiaCorrespondenciaPorDescricao(double limiarSimilaridade = 0.7)
-    {
-        _limiarSimilaridade = limiarSimilaridade;
-    }
 
     public ResultadoCorrespondencia? TentarCorrespondencia(
         Transacao transacao,
@@ -37,7 +32,7 @@ public class EstrategiaCorrespondenciaPorDescricao : IEstrategiaCorrespondencia
             .OrderByDescending(x => x.Similaridade)
             .ToList();
 
-        if (!lancamentosSimilares.Any())
+        if (lancamentosSimilares.Count == 0)
             return null;
 
         var melhor = lancamentosSimilares.First();
@@ -47,14 +42,14 @@ public class EstrategiaCorrespondenciaPorDescricao : IEstrategiaCorrespondencia
             Lancamento = melhor.Lancamento,
             Tipo = TipoCorrespondencia.PorDescricao,
             NivelConfianca = melhor.Similaridade * 0.9,
-            Observacoes = new List<string>
-            {
+            Observacoes =
+            [
                 $"Correspondência por descrição (similaridade: {melhor.Similaridade:P0})"
-            }
+            ]
         };
     }
 
-    private double CalcularSimilaridade(string texto1, string texto2)
+    private static double CalcularSimilaridade(string texto1, string texto2)
     {
         if (string.IsNullOrWhiteSpace(texto1) || string.IsNullOrWhiteSpace(texto2))
             return 0;

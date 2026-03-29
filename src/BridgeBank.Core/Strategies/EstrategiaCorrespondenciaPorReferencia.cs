@@ -1,7 +1,7 @@
-using BridgeBank.Core.Interfaces;
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Interfaces;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core.Strategies;
+namespace Simansoft.BridgeBank.Core.Strategies;
 
 /// <summary>
 /// Estratégia de correspondência por referência exata
@@ -29,7 +29,7 @@ public class EstrategiaCorrespondenciaPorReferencia : IEstrategiaCorrespondencia
             Lancamento = lancamento,
             Tipo = TipoCorrespondencia.PorReferencia,
             NivelConfianca = 1.0,
-            Observacoes = new List<string> { "Correspondência por referência exata" }
+            Observacoes = ["Correspondência por referência exata"]
         };
     }
 }

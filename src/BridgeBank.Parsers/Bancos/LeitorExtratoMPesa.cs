@@ -1,7 +1,7 @@
 using System.Globalization;
-using BridgeBank.Core.Models;
 using BridgeBank.Parsers.Excel;
 using NPOI.SS.UserModel;
+using Simansoft.BridgeBank.Core.Models;
 
 namespace BridgeBank.Parsers.Bancos;
 

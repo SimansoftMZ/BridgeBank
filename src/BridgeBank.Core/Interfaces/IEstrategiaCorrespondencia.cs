@@ -1,6 +1,6 @@
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core.Interfaces;
+namespace Simansoft.BridgeBank.Core.Interfaces;
 
 /// <summary>
 /// Interface para estratégias de correspondência de transações
@@ -28,5 +28,5 @@ public class ResultadoCorrespondencia
     public LancamentoERP Lancamento { get; set; } = null!;
     public TipoCorrespondencia Tipo { get; set; }
     public double NivelConfianca { get; set; }
-    public List<string> Observacoes { get; set; } = new();
+    public List<string> Observacoes { get; set; } = [];
 }

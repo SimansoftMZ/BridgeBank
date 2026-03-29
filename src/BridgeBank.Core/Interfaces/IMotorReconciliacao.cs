@@ -1,6 +1,6 @@
-using BridgeBank.Core.Models;
+using Simansoft.BridgeBank.Core.Models;
 
-namespace BridgeBank.Core.Interfaces;
+namespace Simansoft.BridgeBank.Core.Interfaces;
 
 /// <summary>
 /// Interface para o motor de reconciliação bancária
