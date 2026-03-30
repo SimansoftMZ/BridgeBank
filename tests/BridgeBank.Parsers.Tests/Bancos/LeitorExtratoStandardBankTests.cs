@@ -29,7 +29,7 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Contains("5551234567", extrato.NumeroConta);
+        Assert.Contains("7492092919320", extrato.NumeroConta);
     }
 
     [TestMethod]
@@ -50,16 +50,16 @@ public class LeitorExtratoStandardBankTests
     }
 
     [TestMethod]
-    public void LerExtrato_TransacoesCreditoEDebito()
+    public void LerExtrato_PrimeiraTransacaoCorrecta()
     {
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        List<Transacao> creditos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito)];
-        List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
-
-        Assert.IsNotEmpty(creditos);
-        Assert.IsNotEmpty(debitos);
+        Transacao primeira = extrato.Transacoes[0];
+        Assert.AreEqual(new DateTime(2025, 12, 15), primeira.Data);
+        Assert.AreEqual(3180.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
+        Assert.IsNotNull(primeira.Referencia);
     }
 
     [TestMethod]
@@ -69,7 +69,7 @@ public class LeitorExtratoStandardBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(1, extrato.DataInicio.Month);
+        Assert.AreEqual(12, extrato.DataInicio.Month);
         Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 

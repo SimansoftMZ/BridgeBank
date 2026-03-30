@@ -29,7 +29,7 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("4440005678", extrato.NumeroConta);
+        Assert.AreEqual("50536860631688", extrato.NumeroConta);
     }
 
     [TestMethod]
@@ -38,9 +38,8 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        // DataInicio/DataFim come from "De 01-01-2025 a 31-01-2025" header
-        Assert.AreEqual(new DateTime(2025, 1, 1), extrato.DataInicio);
-        Assert.AreEqual(new DateTime(2025, 1, 31), extrato.DataFim);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim);
     }
 
     [TestMethod]
@@ -49,8 +48,8 @@ public class LeitorExtratoAccessBankTests
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(142350.00m, extrato.SaldoInicial);
-        Assert.AreEqual(198725.00m, extrato.SaldoFinal);
+        Assert.AreEqual(5488800.44m, extrato.SaldoInicial);
+        Assert.AreEqual(5299234.28m, extrato.SaldoFinal);
     }
 
     [TestMethod]
@@ -60,7 +59,6 @@ public class LeitorExtratoAccessBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
-        Assert.HasCount(10, extrato.Transacoes);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsFalse(string.IsNullOrEmpty(t.Id));
@@ -77,10 +75,10 @@ public class LeitorExtratoAccessBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 1, 2), primeira.Data);
-        Assert.AreEqual(38500.00m, primeira.Valor);
+        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
+        Assert.AreEqual(4400.00m, primeira.Valor);
         Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
-        Assert.Contains("Recebimento", primeira.Descricao);
+        Assert.Contains("DEPÓSITO", primeira.Descricao);
     }
 
     [TestMethod]

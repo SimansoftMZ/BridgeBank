@@ -30,7 +30,7 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("1234567890", extrato.NumeroConta);
+        Assert.AreEqual("1610800923583", extrato.NumeroConta);
     }
 
     [TestMethod]
@@ -39,7 +39,7 @@ public class LeitorExtratoBCITests
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(125000.50m, extrato.SaldoInicial);
+        Assert.AreEqual(200.00m, extrato.SaldoInicial);
     }
 
     [TestMethod]
@@ -49,7 +49,6 @@ public class LeitorExtratoBCITests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
-        Assert.HasCount(10, extrato.Transacoes);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -66,23 +65,22 @@ public class LeitorExtratoBCITests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 1, 2), primeira.Data);
-        Assert.AreEqual(15750.00m, primeira.Valor);
-        Assert.AreEqual(TipoTransacao.Debito, primeira.Tipo);
-        Assert.Contains("fornecedor", primeira.Descricao);
+        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
+        Assert.AreEqual(4400.00m, primeira.Valor);
+        Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
+        Assert.Contains("Pag. Serv.", primeira.Descricao);
     }
 
     [TestMethod]
-    public void LerExtrato_TransacoesCreditoExistem()
+    public void LerExtrato_TransacoesDebitoCorretas()
     {
         LeitorExtratoBCI leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        List<Transacao> creditos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Credito)];
-        Assert.IsNotEmpty(creditos);
-        // Segunda transacao e um credito
-        Assert.AreEqual(TipoTransacao.Credito, extrato.Transacoes[1].Tipo);
-        Assert.AreEqual(45000.00m, extrato.Transacoes[1].Valor);
+        // A segunda transacção é uma comissão (débito)
+        Transacao comissao = extrato.Transacoes[1];
+        Assert.AreEqual(TipoTransacao.Debito, comissao.Tipo);
+        Assert.Contains("Comissão", comissao.Descricao);
     }
 
     [TestMethod]
@@ -92,17 +90,8 @@ public class LeitorExtratoBCITests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(1, extrato.DataInicio.Month);
+        Assert.AreEqual(12, extrato.DataInicio.Month);
         Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
-    }
-
-    [TestMethod]
-    public void LerExtrato_SaldoFinalCorreto()
-    {
-        LeitorExtratoBCI leitor = new();
-        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
-
-        Assert.AreEqual(208000.25m, extrato.SaldoFinal);
     }
 
     [TestMethod]

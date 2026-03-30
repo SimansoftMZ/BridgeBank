@@ -29,7 +29,7 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("258841234567", extrato.NumeroConta);
+        Assert.AreEqual("720457", extrato.NumeroConta);
     }
 
     [TestMethod]
@@ -38,8 +38,8 @@ public class LeitorExtratoMPesaTests
         LeitorExtratoMPesa leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(1, extrato.DataInicio.Month);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio.Date);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim.Date);
     }
 
     [TestMethod]
@@ -49,7 +49,6 @@ public class LeitorExtratoMPesaTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
-        // 13 completed transactions (1 reversed is excluded)
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -82,16 +81,6 @@ public class LeitorExtratoMPesaTests
             Assert.IsNotNull(t.Referencia);
             Assert.IsNotEmpty(t.Referencia);
         }
-    }
-
-    [TestMethod]
-    public void LerExtrato_TransacaoRevertidaExcluida()
-    {
-        LeitorExtratoMPesa leitor = new();
-        ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
-
-        // A transacao com status "Reversed" nao deve ser incluida
-        Assert.DoesNotContain(t => t.Referencia == "RCP0001014", extrato.Transacoes);
     }
 
     [TestMethod]

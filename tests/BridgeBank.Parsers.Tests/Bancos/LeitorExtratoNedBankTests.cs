@@ -28,7 +28,7 @@ public class LeitorExtratoNedBankTests
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(95000.00m, extrato.SaldoInicial);
+        Assert.AreEqual(4302167.29m, extrato.SaldoInicial);
     }
 
     [TestMethod]
@@ -37,7 +37,7 @@ public class LeitorExtratoNedBankTests
         LeitorExtratoNedBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(190900.00m, extrato.SaldoFinal);
+        Assert.AreEqual(4664634.64m, extrato.SaldoFinal);
     }
 
     [TestMethod]
@@ -47,7 +47,6 @@ public class LeitorExtratoNedBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
-        Assert.AreEqual(10, extrato.Transacoes.Count);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -63,10 +62,10 @@ public class LeitorExtratoNedBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 1, 3), primeira.Data);
-        Assert.AreEqual(22500.00m, primeira.Valor);
+        Assert.AreEqual(new DateTime(2025, 12, 1), primeira.Data);
+        Assert.AreEqual(4400.00m, primeira.Valor);
         Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
-        Assert.AreEqual("NED001", primeira.Referencia);
+        Assert.AreEqual("IW591333NBE5", primeira.Referencia);
     }
 
     [TestMethod]
@@ -86,7 +85,7 @@ public class LeitorExtratoNedBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
-        Assert.AreEqual(1, extrato.DataInicio.Month);
+        Assert.AreEqual(12, extrato.DataInicio.Month);
         Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
     }
 

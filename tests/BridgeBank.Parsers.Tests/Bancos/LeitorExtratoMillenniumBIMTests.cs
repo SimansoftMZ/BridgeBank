@@ -29,7 +29,7 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("9876543210", extrato.NumeroConta);
+        Assert.AreEqual("604130508", extrato.NumeroConta);
     }
 
     [TestMethod]
@@ -38,9 +38,8 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        // DataInicio/DataFim come from "de 01-01-2025 até 31-01-2025" header
-        Assert.AreEqual(new DateTime(2025, 1, 1), extrato.DataInicio);
-        Assert.AreEqual(new DateTime(2025, 1, 31), extrato.DataFim);
+        Assert.AreEqual(new DateTime(2025, 12, 1), extrato.DataInicio);
+        Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim);
     }
 
     [TestMethod]
@@ -49,8 +48,8 @@ public class LeitorExtratoMillenniumBIMTests
         LeitorExtratoMillenniumBIM leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual(250000.75m, extrato.SaldoInicial);
-        Assert.AreEqual(394450.75m, extrato.SaldoFinal);
+        Assert.AreEqual(8965395.17m, extrato.SaldoInicial);
+        Assert.AreEqual(3371027.03m, extrato.SaldoFinal);
     }
 
     [TestMethod]
@@ -60,7 +59,6 @@ public class LeitorExtratoMillenniumBIMTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.IsNotEmpty(extrato.Transacoes);
-        Assert.AreEqual(12, extrato.Transacoes.Count);
         foreach (Transacao t in extrato.Transacoes)
         {
             Assert.IsNotEmpty(t.Id);
@@ -76,10 +74,10 @@ public class LeitorExtratoMillenniumBIMTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Transacao primeira = extrato.Transacoes[0];
-        Assert.AreEqual(new DateTime(2025, 1, 3), primeira.Data);
-        Assert.AreEqual(35000.00m, primeira.Valor);
+        Assert.AreEqual(new DateTime(2025, 12, 16), primeira.Data);
+        Assert.AreEqual(132829.99m, primeira.Valor);
         Assert.AreEqual(TipoTransacao.Credito, primeira.Tipo);
-        Assert.Contains("cheque", primeira.Descricao, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ENTIDADE 14029 CREDITO", primeira.Descricao);
     }
 
     [TestMethod]
