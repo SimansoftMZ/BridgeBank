@@ -5,33 +5,33 @@
 [![NuGet](https://img.shields.io/nuget/v/Simansoft.BridgeBank.Core)](https://www.nuget.org/packages/Simansoft.BridgeBank.Core)
 [![Docker](https://img.shields.io/docker/v/simansoft/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoft/bridgebank-api)
 
-BridgeBank is an open-source .NET toolkit for bank reconciliation in ERP systems. It provides intelligent transaction matching, automatic classification (rule-based and ML), bank statement parsing, and payment file generation for Mozambican and international banks.
+O BridgeBank é um toolkit .NET de código aberto para reconciliação bancária em sistemas ERP. Oferece correspondência inteligente de transacções, classificação automática (baseada em regras e ML), leitura de extractos bancários e geração de ficheiros de pagamento para bancos moçambicanos e internacionais.
 
-Available as **NuGet packages** for .NET, a **REST API** (Docker) for any language, and **typed SDKs** for Python, TypeScript and Java.
+Disponível como **pacotes NuGet** para .NET, uma **API REST** (Docker) para qualquer linguagem, e **SDKs tipados** para Python, TypeScript e Java.
 
-## Features
+## Funcionalidades
 
-- **Bank Reconciliation** — intelligent matching engine with pluggable strategies (reference, value+date, description similarity, ML-based)
-- **Transaction Classification** — rule-based and ML.NET-powered automatic categorisation (salaries, taxes, bank fees, suppliers, etc.)
-- **Bank Statement Parsing** — reads Excel extracts from 6 Mozambican banks
-- **Payment File Generation** — produces bank-specific payment files (TXT, CSV, XML)
-- **REST API** — exposes all functionality over HTTP with OpenAPI spec and Scalar UI
-- **Multi-language SDKs** — typed clients for Python, TypeScript and Java via Kiota
+- **Reconciliação Bancária** — motor de correspondência inteligente com estratégias configuráveis (referência, valor+data, similaridade de descrição, baseado em ML)
+- **Classificação de Transacções** — categorização automática baseada em regras e ML.NET (salários, impostos, taxas bancárias, fornecedores, etc.)
+- **Leitura de Extractos Bancários** — lê extractos Excel de 6 bancos moçambicanos
+- **Geração de Ficheiros de Pagamento** — produz ficheiros de pagamento específicos por banco (TXT, CSV, XML)
+- **API REST** — expõe todas as funcionalidades via HTTP com especificação OpenAPI e interface Scalar
+- **SDKs Multi-linguagem** — clientes tipados para Python, TypeScript e Java via Kiota
 
-## Supported Banks
+## Bancos Suportados
 
-| Bank | Statement Parser | Payment Generator |
-|------|:---:|:---:|
-| BCI (Banco Comercial e de Investimentos) | Yes | Yes (TXT) |
-| Millennium BIM | Yes | Yes (CSV) |
-| Standard Bank | Yes | Yes (XML) |
-| NedBank | Yes | — |
-| Access Bank | Yes | — |
-| M-Pesa | Yes | — |
+| Banco | Leitor de Extracto | Gerador de Pagamento |
+|-------|:---:|:---:|
+| BCI (Banco Comercial e de Investimentos) | Sim | Sim (TXT) |
+| Millennium BIM | Sim | Sim (CSV) |
+| Standard Bank | Sim | Sim (XML) |
+| NedBank | Sim | — |
+| Access Bank | Sim | — |
+| M-Pesa | Sim | — |
 
-## Installation
+## Instalação
 
-### NuGet Packages (.NET)
+### Pacotes NuGet (.NET)
 
 ```bash
 dotnet add package Simansoft.BridgeBank.Core
@@ -39,20 +39,20 @@ dotnet add package Simansoft.BridgeBank.Parsers
 dotnet add package Simansoft.BridgeBank.Generators
 ```
 
-For ML-based classification and reconciliation:
+Para classificação e reconciliação baseadas em ML:
 
 ```bash
 dotnet add package Simansoft.BridgeBank.ML
 ```
 
-### Docker (any language)
+### Docker (qualquer linguagem)
 
 ```bash
 docker pull simansoft/bridgebank-api
 docker run -p 8080:8080 simansoft/bridgebank-api
 ```
 
-Or with Docker Compose:
+Ou com Docker Compose:
 
 ```bash
 git clone https://github.com/SimansoftMZ/BridgeBank.git
@@ -60,7 +60,7 @@ cd BridgeBank
 docker compose up --build
 ```
 
-The API will be available at `http://localhost:8080` with the interactive Scalar UI at `http://localhost:8080/scalar/v1`.
+A API ficará disponível em `http://localhost:8080` com a interface interativa Scalar em `http://localhost:8080/scalar/v1`.
 
 ### SDKs (Python, TypeScript, Java)
 
@@ -76,7 +76,7 @@ pip install -r sdks/python/requirements.txt
 cd sdks/typescript && npm install
 ```
 
-**Java** — add to your `pom.xml`:
+**Java** — adicione ao seu `pom.xml`:
 
 ```xml
 <dependency>
@@ -86,7 +86,7 @@ cd sdks/typescript && npm install
 </dependency>
 ```
 
-### Build from Source
+### Compilar a partir do Código Fonte
 
 ```bash
 git clone https://github.com/SimansoftMZ/BridgeBank.git
@@ -94,9 +94,9 @@ cd BridgeBank
 dotnet build
 ```
 
-## Quick Start
+## Início Rápido
 
-### Reconciliation
+### Reconciliação
 
 ```csharp
 using Simansoft.BridgeBank.Core;
@@ -115,7 +115,7 @@ foreach (var r in resultados.Where(r => r.TipoCorrespondencia != TipoCorresponde
 }
 ```
 
-### Transaction Classification
+### Classificação de Transacções
 
 ```csharp
 using Simansoft.BridgeBank.Core.Classificacao;
@@ -126,7 +126,7 @@ var resultado = classificador.Classificar(transacao);
 Console.WriteLine($"Categoria: {resultado.Categoria}, Confianca: {resultado.Confianca:P0}");
 ```
 
-### Bank Statement Parsing
+### Leitura de Extractos Bancários
 
 ```csharp
 using Simansoft.BridgeBank.Parsers.Bancos;
@@ -139,7 +139,7 @@ Console.WriteLine($"Conta: {extrato.NumeroConta}");
 Console.WriteLine($"Transacoes: {extrato.Transacoes.Count}");
 ```
 
-### Payment File Generation
+### Geração de Ficheiros de Pagamento
 
 ```csharp
 using Simansoft.BridgeBank.Generators.Bancos;
@@ -163,99 +163,99 @@ var gerador = new GeradorPagamentoBCI();
 gerador.GerarFicheiro(pagamentos, "pagamentos.txt");
 ```
 
-### ML Classification
+### Classificação com ML
 
 ```csharp
 using Simansoft.BridgeBank.ML.Classificacao;
 
-// Train a model
+// Treinar um modelo
 var treinador = new TreinadorClassificacao();
 var metricas = treinador.TreinarComDadosSinteticos("modelo.zip");
 
-// Use it in the classifier
+// Usar o modelo no classificador
 using var classificador = ClassificadorTransacao.CriarComRegrasPadrao();
 classificador.RegistrarRegra(new RegraClassificacaoML("modelo.zip", prioridade: 40));
 ```
 
-### REST API (from any language)
+### API REST (a partir de qualquer linguagem)
 
 ```bash
-# Classify transactions
+# Classificar transacções
 curl -X POST http://localhost:8080/api/classificacao \
   -H "Content-Type: application/json" \
   -d '{"transacoes": [{"id": "1", "data": "2026-01-15", "valor": 1500, "descricao": "PAGAMENTO SALARIO", "tipo": "Debito", "categoria": "NaoClassificada", "confiancaClassificacao": 0}]}'
 
-# Parse a bank statement (file upload)
+# Ler um extracto bancário (upload de ficheiro)
 curl -X POST http://localhost:8080/api/extratos/parse \
   -F "file=@extrato_bci.xls"
 
-# List supported banks
+# Listar bancos suportados
 curl http://localhost:8080/api/bancos/parsers
 ```
 
-## REST API Endpoints
+## Endpoints da API REST
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check |
-| `GET` | `/api/bancos/parsers` | List banks with statement parsers |
-| `GET` | `/api/bancos/geradores` | List banks with payment generators |
-| `POST` | `/api/extratos/parse` | Upload and parse a bank statement file |
-| `POST` | `/api/classificacao` | Classify transactions (JSON) |
-| `POST` | `/api/classificacao/extrato` | Upload a statement and classify all transactions |
-| `POST` | `/api/reconciliacao` | Reconcile transactions with ERP entries |
-| `POST` | `/api/pagamentos/gerar` | Generate and download a payment file |
-| `GET` | `/api/enums/categorias` | List transaction categories |
-| `GET` | `/api/enums/tipos-transacao` | List transaction types |
-| `GET` | `/api/enums/tipos-correspondencia` | List match types |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/health` | Verificação de estado |
+| `GET` | `/api/bancos/parsers` | Listar bancos com leitores de extracto |
+| `GET` | `/api/bancos/geradores` | Listar bancos com geradores de pagamento |
+| `POST` | `/api/extratos/parse` | Carregar e ler um ficheiro de extracto bancário |
+| `POST` | `/api/classificacao` | Classificar transacções (JSON) |
+| `POST` | `/api/classificacao/extrato` | Carregar um extracto e classificar todas as transacções |
+| `POST` | `/api/reconciliacao` | Reconciliar transacções com lançamentos ERP |
+| `POST` | `/api/pagamentos/gerar` | Gerar e descarregar um ficheiro de pagamento |
+| `GET` | `/api/enums/categorias` | Listar categorias de transacções |
+| `GET` | `/api/enums/tipos-transacao` | Listar tipos de transacção |
+| `GET` | `/api/enums/tipos-correspondencia` | Listar tipos de correspondência |
 
-Interactive documentation: `http://localhost:8080/scalar/v1`
-OpenAPI spec: `http://localhost:8080/openapi/v1.json`
+Documentação interativa: `http://localhost:8080/scalar/v1`
+Especificação OpenAPI: `http://localhost:8080/openapi/v1.json`
 
-## Project Structure
+## Estrutura do Projecto
 
 ```
 BridgeBank/
 ├── src/
-│   ├── BridgeBank.Core/           # Reconciliation engine, classification, models
-│   │   ├── Models/                # Domain models (Transacao, ExtratoBancario, etc.)
-│   │   ├── Interfaces/            # Contracts (IMotorReconciliacao, IRegraClassificacao, etc.)
-│   │   ├── Strategies/            # Matching strategies (reference, value+date, description)
-│   │   ├── Classificacao/         # Rule-based transaction classifier
-│   │   └── MotorReconciliacao.cs  # Main reconciliation engine
-│   ├── BridgeBank.Parsers/        # Bank statement readers
-│   │   ├── Interfaces/            # ILeitorExtrato contract
-│   │   ├── Excel/                 # Base Excel reader (NPOI)
-│   │   └── Bancos/                # Bank-specific implementations
-│   ├── BridgeBank.Generators/     # Payment file generators
-│   │   ├── Interfaces/            # IGeradorFicheiroPagamento contract
-│   │   ├── Models/                # Pagamento model
-│   │   └── Bancos/                # Bank-specific implementations (TXT, CSV, XML)
-│   ├── BridgeBank.ML/             # Machine learning classification & reconciliation
-│   │   ├── Classificacao/         # ML.NET transaction classifier
-│   │   ├── Reconciliacao/         # ML.NET matching strategy
-│   │   ├── Dados/                 # Synthetic training data generator
-│   │   └── Infraestrutura/        # Model management and configuration
-│   └── BridgeBank.Api/            # REST API (ASP.NET Core Minimal API)
-│       ├── Dtos/                  # Request/response DTOs
-│       ├── Mappers/               # Model <-> DTO mapping
-│       ├── Dockerfile             # Multi-stage Docker build
-│       └── Program.cs             # API endpoints and service registration
-├── tests/                         # Unit tests for each project
-├── samples/                       # Usage examples
-├── sdks/                          # Generated API clients (Kiota)
-│   ├── python/                    # Python SDK
-│   ├── typescript/                # TypeScript SDK
-│   └── java/                      # Java SDK
-├── openapi/                       # Auto-generated OpenAPI spec
-├── scripts/                       # SDK regeneration scripts
-├── docker-compose.yml             # Docker Compose for the API
-└── dotnet-tools.json              # Local tool manifest (Kiota)
+│   ├── BridgeBank.Core/           # Motor de reconciliação, classificação e modelos
+│   │   ├── Models/                # Modelos de domínio (Transacao, ExtratoBancario, etc.)
+│   │   ├── Interfaces/            # Contratos (IMotorReconciliacao, IRegraClassificacao, etc.)
+│   │   ├── Strategies/            # Estratégias de correspondência (referência, valor+data, descrição)
+│   │   ├── Classificacao/         # Classificador de transacções baseado em regras
+│   │   └── MotorReconciliacao.cs  # Motor principal de reconciliação
+│   ├── BridgeBank.Parsers/        # Leitores de extractos bancários
+│   │   ├── Interfaces/            # Contrato ILeitorExtrato
+│   │   ├── Excel/                 # Leitor base Excel (NPOI)
+│   │   └── Bancos/                # Implementações específicas por banco
+│   ├── BridgeBank.Generators/     # Geradores de ficheiros de pagamento
+│   │   ├── Interfaces/            # Contrato IGeradorFicheiroPagamento
+│   │   ├── Models/                # Modelo Pagamento
+│   │   └── Bancos/                # Implementações específicas por banco (TXT, CSV, XML)
+│   ├── BridgeBank.ML/             # Classificação e reconciliação com aprendizagem automática
+│   │   ├── Classificacao/         # Classificador de transacções ML.NET
+│   │   ├── Reconciliacao/         # Estratégia de correspondência ML.NET
+│   │   ├── Dados/                 # Gerador de dados de treino sintéticos
+│   │   └── Infraestrutura/        # Gestão de modelos e configuração
+│   └── BridgeBank.Api/            # API REST (ASP.NET Core Minimal API)
+│       ├── Dtos/                  # DTOs de pedido/resposta
+│       ├── Mappers/               # Mapeamento Modelo <-> DTO
+│       ├── Dockerfile             # Build Docker multi-etapa
+│       └── Program.cs             # Endpoints da API e registo de serviços
+├── tests/                         # Testes unitários para cada projecto
+├── samples/                       # Exemplos de utilização
+├── sdks/                          # Clientes da API gerados (Kiota)
+│   ├── python/                    # SDK Python
+│   ├── typescript/                # SDK TypeScript
+│   └── java/                      # SDK Java
+├── openapi/                       # Especificação OpenAPI gerada automaticamente
+├── scripts/                       # Scripts de regeneração dos SDKs
+├── docker-compose.yml             # Docker Compose para a API
+└── dotnet-tools.json              # Manifesto de ferramentas locais (Kiota)
 ```
 
-## Extensibility
+## Extensibilidade
 
-### Custom Matching Strategy
+### Estratégia de Correspondência Personalizada
 
 ```csharp
 public class MinhaEstrategia : IEstrategiaCorrespondencia
@@ -266,7 +266,7 @@ public class MinhaEstrategia : IEstrategiaCorrespondencia
         Transacao transacao,
         IEnumerable<LancamentoERP> lancamentos)
     {
-        // Custom matching logic
+        // Lógica de correspondência personalizada
         return null;
     }
 }
@@ -274,7 +274,7 @@ public class MinhaEstrategia : IEstrategiaCorrespondencia
 motor.RegistrarEstrategia(new MinhaEstrategia());
 ```
 
-### Custom Classification Rule
+### Regra de Classificação Personalizada
 
 ```csharp
 public class MinhaRegra : IRegraClassificacao
@@ -284,7 +284,7 @@ public class MinhaRegra : IRegraClassificacao
 
     public ResultadoClassificacao? Classificar(Transacao transacao)
     {
-        // Custom classification logic
+        // Lógica de classificação personalizada
         return null;
     }
 }
@@ -292,9 +292,9 @@ public class MinhaRegra : IRegraClassificacao
 classificador.RegistrarRegra(new MinhaRegra());
 ```
 
-### Adding a New Bank Parser
+### Adicionar um Novo Leitor de Banco
 
-Extend `LeitorExcelBase` and implement `ILeitorExtrato`:
+Extenda `LeitorExcelBase` e implemente `ILeitorExtrato`:
 
 ```csharp
 public class LeitorExtratoNovoBanco : LeitorExcelBase, ILeitorExtrato
@@ -305,14 +305,14 @@ public class LeitorExtratoNovoBanco : LeitorExcelBase, ILeitorExtrato
     public ExtratoBancario LerExtrato(string caminhoArquivo)
     {
         var workbook = AbrirFicheiro(caminhoArquivo);
-        // Bank-specific parsing logic
+        // Lógica de leitura específica do banco
     }
 }
 ```
 
-## Regenerating SDKs
+## Regenerar os SDKs
 
-After modifying the API, regenerate the typed SDKs:
+Após modificar a API, regenere os SDKs tipados:
 
 ```bash
 # Linux/macOS
@@ -322,45 +322,45 @@ After modifying the API, regenerate the typed SDKs:
 pwsh scripts/generate-sdks.ps1
 ```
 
-This rebuilds the API, regenerates the OpenAPI spec, and updates all three SDKs (Python, TypeScript, Java) via Kiota.
+Este processo reconstrói a API, regenera a especificação OpenAPI e actualiza os três SDKs (Python, TypeScript, Java) via Kiota.
 
-## Tests
+## Testes
 
 ```bash
-# Run all tests
+# Executar todos os testes
 dotnet test
 
-# Run tests for a specific project
+# Executar testes de um projecto específico
 dotnet test tests/BridgeBank.Core.Tests
 
-# With coverage
+# Com cobertura de código
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-## Code Conventions
+## Convenções de Código
 
-- **Code in Portuguese**: classes, methods, variables and comments in Portuguese
-- **Structure in English**: project names, folders and namespaces in English
-- **XML documentation**: all public classes and methods have XML comments
+- **Código em português**: classes, métodos, variáveis e comentários em português
+- **Estrutura em inglês**: nomes de projectos, pastas e namespaces em inglês
+- **Documentação XML**: todas as classes e métodos públicos têm comentários XML
 
-## Contributing
+## Contribuição
 
-Contributions are welcome! Please:
+Contribuições são bem-vindas! Por favor:
 
-1. Fork the project
-2. Create a branch for your feature (`git checkout -b feature/MyFeature`)
-3. Commit your changes (`git commit -m 'Add MyFeature'`)
-4. Push to the branch (`git push origin feature/MyFeature`)
-5. Open a Pull Request
+1. Faça fork do projecto
+2. Crie uma branch para a sua funcionalidade (`git checkout -b feature/MinhaFuncionalidade`)
+3. Faça commit das suas alterações (`git commit -m 'Adicionar MinhaFuncionalidade'`)
+4. Faça push para a branch (`git push origin feature/MinhaFuncionalidade`)
+5. Abra um Pull Request
 
-## License
+## Licença
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Este projecto está licenciado sob a Licença MIT — consulte o ficheiro [LICENSE](LICENSE) para mais detalhes.
 
-## Authors
+## Autores
 
-- **Simansoft** - *Initial development*
+- **Simansoft** - *Desenvolvimento inicial*
 
-## Support
+## Suporte
 
-For questions and support, please open an [issue](https://github.com/SimansoftMZ/BridgeBank/issues) on GitHub.
+Para questões e suporte, por favor abra uma [issue](https://github.com/SimansoftMZ/BridgeBank/issues) no GitHub.
