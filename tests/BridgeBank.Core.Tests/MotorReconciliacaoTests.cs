@@ -4,9 +4,10 @@ using Simansoft.BridgeBank.Core.Strategies;
 
 namespace BridgeBank.Core.Tests;
 
+[TestClass]
 public class MotorReconciliacaoTests
 {
-    [Fact]
+    [TestMethod]
     public void Reconciliar_ComEstrategiaReferencia_DeveReconciliarCorretamente()
     {
         // Arrange
@@ -44,7 +45,7 @@ public class MotorReconciliacaoTests
         Assert.AreEqual(TipoCorrespondencia.PorReferencia, resultados[0].TipoCorrespondencia);
     }
 
-    [Fact]
+    [TestMethod]
     public void Reconciliar_SemCorrespondencia_DeveTerTipoNenhuma()
     {
         // Arrange
@@ -80,7 +81,7 @@ public class MotorReconciliacaoTests
         Assert.AreEqual(TipoCorrespondencia.Nenhuma, resultados[0].TipoCorrespondencia);
     }
 
-    [Fact]
+    [TestMethod]
     public void Reconciliar_ComMultiplasEstrategias_DeveUsarPrioridade()
     {
         // Arrange
