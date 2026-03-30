@@ -4,21 +4,18 @@ using Simansoft.BridgeBank.Core.Models;
 namespace BridgeBank.Parsers.Tests.Bancos;
 
 /// <summary>
-/// Testes de integração para o leitor de extratos do Access Bank.
-/// Requer o ficheiro de exemplo em TestData/Extractos/Access Bank.xls.
+/// Testes para o leitor de extratos do Access Bank.
+/// Utiliza ficheiro fictício em Fixtures/Extractos/Access Bank.xls.
 /// </summary>
+[TestClass]
 public class LeitorExtratoAccessBankTests
 {
     private static readonly string CaminhoFicheiro =
-        Path.Combine(AppContext.BaseDirectory, "TestData", "Extractos", "Access Bank.xls");
+        Path.Combine(AppContext.BaseDirectory, "Fixtures", "Extractos", "Access Bank.xls");
 
-    private static bool FicheiroDisponivel() => File.Exists(CaminhoFicheiro);
-
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_RetornaExtratoAccessBank()
+    [TestMethod]
+    public void LerExtrato_RetornaExtratoAccessBank()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -26,22 +23,18 @@ public class LeitorExtratoAccessBankTests
         Assert.IsNotEmpty(extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_ContaCorrectamenteIdentificada()
+    [TestMethod]
+    public void LerExtrato_ContaCorrectamenteIdentificada()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.AreEqual("00101010001133", extrato.NumeroConta);
+        Assert.AreEqual("50536860631688", extrato.NumeroConta);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_DatasCorretas()
+    [TestMethod]
+    public void LerExtrato_DatasCorretas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -49,11 +42,9 @@ public class LeitorExtratoAccessBankTests
         Assert.AreEqual(new DateTime(2025, 12, 17), extrato.DataFim);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_SaldosCorretos()
+    [TestMethod]
+    public void LerExtrato_SaldosCorretos()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -61,11 +52,9 @@ public class LeitorExtratoAccessBankTests
         Assert.AreEqual(5299234.28m, extrato.SaldoFinal);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesExtraidas()
+    [TestMethod]
+    public void LerExtrato_TransacoesExtraidas()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -79,11 +68,9 @@ public class LeitorExtratoAccessBankTests
         }
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_PrimeiraTransacaoCorrecta()
+    [TestMethod]
+    public void LerExtrato_PrimeiraTransacaoCorrecta()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
@@ -94,23 +81,17 @@ public class LeitorExtratoAccessBankTests
         Assert.Contains("DEPÓSITO", primeira.Descricao);
     }
 
-    [SkippableFact]
-    public void LerExtrato_FicheiroReal_TransacoesDebitoExistem()
+    [TestMethod]
+    public void LerExtrato_TransacoesDebitoExistem()
     {
-        Skip.IfNot(FicheiroDisponivel(), "Ficheiro de extracto Access Bank não disponível");
-
         LeitorExtratoAccessBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         List<Transacao> debitos = [.. extrato.Transacoes.Where(t => t.Tipo == TipoTransacao.Debito)];
         Assert.IsNotEmpty(debitos);
-        foreach (Transacao d in debitos)
-        {
-            Assert.Contains("TRANSFERENCIA", d.Descricao);
-        }
     }
 
-    [Fact]
+    [TestMethod]
     public void SuportaArquivo_ExtensaoXls_RetornaTrue()
     {
         LeitorExtratoAccessBank leitor = new();

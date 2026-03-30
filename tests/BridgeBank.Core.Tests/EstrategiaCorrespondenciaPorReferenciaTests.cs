@@ -4,9 +4,10 @@ using Simansoft.BridgeBank.Core.Strategies;
 
 namespace BridgeBank.Core.Tests;
 
+[TestClass]
 public class EstrategiaCorrespondenciaPorReferenciaTests
 {
-    [Fact]
+    [TestMethod]
     public void TentarCorrespondencia_ComReferenciaExata_DeveRetornarCorrespondencia()
     {
         // Arrange
@@ -34,7 +35,7 @@ public class EstrategiaCorrespondenciaPorReferenciaTests
         Assert.AreEqual(1.0, resultado.NivelConfianca);
     }
 
-    [Fact]
+    [TestMethod]
     public void TentarCorrespondencia_SemReferencia_DeveRetornarNull()
     {
         // Arrange
