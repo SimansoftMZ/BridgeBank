@@ -8,9 +8,10 @@ namespace Simansoft.BridgeBank.Core.Classificacao;
 /// Motor de classificação automática de transações bancárias.
 /// Aplica regras baseadas em padrões para categorizar cada transação.
 /// </summary>
-public class ClassificadorTransacao
+public class ClassificadorTransacao : IDisposable
 {
     private readonly List<IRegraClassificacao> _regras = [];
+    private bool _disposed;
 
     /// <summary>
     /// Cria um classificador com todas as regras padrão registadas
@@ -84,5 +85,22 @@ public class ClassificadorTransacao
         }
 
         return resultados;
+    }
+
+    /// <summary>
+    /// Liberta os recursos das regras que implementam IDisposable
+    /// </summary>
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            foreach (var regra in _regras)
+            {
+                if (regra is IDisposable d)
+                    d.Dispose();
+            }
+            _disposed = true;
+        }
+        GC.SuppressFinalize(this);
     }
 }

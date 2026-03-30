@@ -1,7 +1,6 @@
 using Simansoft.BridgeBank.Core.Classificacao;
 using Simansoft.BridgeBank.Core.Models;
 using Simansoft.BridgeBank.ML.Classificacao;
-using Simansoft.BridgeBank.ML.Dados;
 
 namespace BridgeBank.Samples;
 

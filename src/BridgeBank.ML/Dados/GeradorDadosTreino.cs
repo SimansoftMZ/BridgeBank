@@ -9,41 +9,40 @@ namespace Simansoft.BridgeBank.ML.Dados;
 /// </summary>
 public static class GeradorDadosTreino
 {
-    private static readonly Random Rng = new(42);
-
     /// <summary>
     /// Gera um conjunto completo de dados de treino para classificação
     /// </summary>
     public static List<EntradaClassificacao> GerarDadosClassificacao(int exemplosPorCategoria = 200)
     {
+        Random rng = new(42);
         List<EntradaClassificacao> dados = [];
 
-        dados.AddRange(GerarExemplos(PadroesDespesaBancaria, nameof(CategoriaTransacao.DespesaBancaria), TipoTransacao.Debito, 50, 5000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesPagamentoEstado, nameof(CategoriaTransacao.PagamentoEstado), TipoTransacao.Debito, 5000, 500000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesSalario, nameof(CategoriaTransacao.Salario), TipoTransacao.Debito, 30000, 2000000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesPagamentoCliente, nameof(CategoriaTransacao.PagamentoCliente), TipoTransacao.Credito, 500, 1000000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesPagamentoFornecedor, nameof(CategoriaTransacao.PagamentoFornecedor), TipoTransacao.Debito, 1000, 500000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesTransferenciaInterna, nameof(CategoriaTransacao.TransferenciaInterna), TipoTransacao.Debito, 10000, 5000000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesEmprestimo, nameof(CategoriaTransacao.Emprestimo), TipoTransacao.Debito, 10000, 500000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesPagamentoServicos, nameof(CategoriaTransacao.PagamentoServicos), TipoTransacao.Debito, 2000, 50000, exemplosPorCategoria));
-        dados.AddRange(GerarExemplos(PadroesNaoClassificada, nameof(CategoriaTransacao.NaoClassificada), TipoTransacao.Debito, 100, 100000, exemplosPorCategoria));
+        dados.AddRange(GerarExemplos(PadroesDespesaBancaria, nameof(CategoriaTransacao.DespesaBancaria), TipoTransacao.Debito, 50, 5000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesPagamentoEstado, nameof(CategoriaTransacao.PagamentoEstado), TipoTransacao.Debito, 5000, 500000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesSalario, nameof(CategoriaTransacao.Salario), TipoTransacao.Debito, 30000, 2000000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesPagamentoCliente, nameof(CategoriaTransacao.PagamentoCliente), TipoTransacao.Credito, 500, 1000000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesPagamentoFornecedor, nameof(CategoriaTransacao.PagamentoFornecedor), TipoTransacao.Debito, 1000, 500000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesTransferenciaInterna, nameof(CategoriaTransacao.TransferenciaInterna), TipoTransacao.Debito, 10000, 5000000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesEmprestimo, nameof(CategoriaTransacao.Emprestimo), TipoTransacao.Debito, 10000, 500000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesPagamentoServicos, nameof(CategoriaTransacao.PagamentoServicos), TipoTransacao.Debito, 2000, 50000, exemplosPorCategoria, rng));
+        dados.AddRange(GerarExemplos(PadroesNaoClassificada, nameof(CategoriaTransacao.NaoClassificada), TipoTransacao.Debito, 100, 100000, exemplosPorCategoria, rng));
 
         // Shuffle
-        return [.. dados.OrderBy(_ => Rng.Next())];
+        return [.. dados.OrderBy(_ => rng.Next())];
     }
 
     private static List<EntradaClassificacao> GerarExemplos(
         string[] padroes, string categoria, TipoTransacao tipoPredominante,
-        float valorMin, float valorMax, int quantidade)
+        float valorMin, float valorMax, int quantidade, Random rng)
     {
         List<EntradaClassificacao> exemplos = [];
         for (int i = 0; i < quantidade; i++)
         {
-            string padrao = padroes[Rng.Next(padroes.Length)];
-            string descricao = ExpandirPadrao(padrao);
-            float valor = valorMin + (float)(Rng.NextDouble() * (valorMax - valorMin));
+            string padrao = padroes[rng.Next(padroes.Length)];
+            string descricao = ExpandirPadrao(padrao, rng);
+            float valor = valorMin + (float)(rng.NextDouble() * (valorMax - valorMin));
             // 90% segue o tipo predominante, 10% o oposto (para robustez)
-            TipoTransacao tipo = Rng.NextDouble() < 0.9 ? tipoPredominante
+            TipoTransacao tipo = rng.NextDouble() < 0.9 ? tipoPredominante
                 : tipoPredominante == TipoTransacao.Debito ? TipoTransacao.Credito : TipoTransacao.Debito;
 
             exemplos.Add(new EntradaClassificacao
@@ -57,21 +56,21 @@ public static class GeradorDadosTreino
         return exemplos;
     }
 
-    private static string ExpandirPadrao(string padrao)
+    private static string ExpandirPadrao(string padrao, Random rng)
     {
         return padrao
-            .Replace("{REF}", GerarReferencia())
-            .Replace("{NUM}", Rng.Next(10000, 99999).ToString())
-            .Replace("{CONTA}", Rng.Next(10000000, 99999999).ToString())
-            .Replace("{NOME}", NomesAleatorios[Rng.Next(NomesAleatorios.Length)])
-            .Replace("{EMPRESA}", EmpresasAleatorias[Rng.Next(EmpresasAleatorias.Length)])
-            .Replace("{MES}", MesesAleatorios[Rng.Next(MesesAleatorios.Length)]);
+            .Replace("{REF}", GerarReferencia(rng))
+            .Replace("{NUM}", rng.Next(10000, 99999).ToString())
+            .Replace("{CONTA}", rng.Next(10000000, 99999999).ToString())
+            .Replace("{NOME}", NomesAleatorios[rng.Next(NomesAleatorios.Length)])
+            .Replace("{EMPRESA}", EmpresasAleatorias[rng.Next(EmpresasAleatorias.Length)])
+            .Replace("{MES}", MesesAleatorios[rng.Next(MesesAleatorios.Length)]);
     }
 
-    private static string GerarReferencia()
+    private static string GerarReferencia(Random rng)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Range(0, 12).Select(_ => chars[Rng.Next(chars.Length)]).ToArray());
+        return new string(Enumerable.Range(0, 12).Select(_ => chars[rng.Next(chars.Length)]).ToArray());
     }
 
     // ══════════════════════════════════════════════════════════════════

@@ -100,10 +100,10 @@ public class ReconciliacaoMLTests
         Assert.AreEqual(0f, features.DescricaoContemEntidade);
     }
 
-    // ── GerarParesDesTreino ─────────────────────────────────────────
+    // ── GerarParesDeTreino ─────────────────────────────────────────
 
     [TestMethod]
-    public void GerarParesDesTreino_DeveGerarPositivosENegativos()
+    public void GerarParesDeTreino_DeveGerarPositivosENegativos()
     {
         var transacoes = new List<Transacao>
         {
@@ -119,7 +119,7 @@ public class ReconciliacaoMLTests
             new() { Transacao = transacoes[0], LancamentoCorrespondente = lancamentos[0], TipoCorrespondencia = TipoCorrespondencia.PorReferencia }
         };
 
-        var pares = TreinadorReconciliacao.GerarParesDesTreino(transacoes, lancamentos, resultados);
+        var pares = TreinadorReconciliacao.GerarParesDeTreino(transacoes, lancamentos, resultados);
 
         Assert.IsTrue(pares.Count >= 2); // pelo menos 1 positivo + 1 negativo
         Assert.IsTrue(pares.Any(p => p.Correspondencia));

@@ -5,7 +5,7 @@ namespace Simansoft.BridgeBank.ML.Classificacao;
 
 /// <summary>
 /// Pipeline de treino do modelo de classificação de transações.
-/// Usa SdcaMaximumEntropy com featurização de texto (char/word n-grams).
+/// Usa LbfgsMaximumEntropy com featurização de texto (char/word n-grams).
 /// </summary>
 public class TreinadorClassificacao
 {

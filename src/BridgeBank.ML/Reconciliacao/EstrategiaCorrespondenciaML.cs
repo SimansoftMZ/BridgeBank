@@ -13,6 +13,7 @@ public class EstrategiaCorrespondenciaML : IEstrategiaCorrespondencia, IDisposab
 {
     private readonly PredictionEngine<EntradaCorrespondencia, PrevisaoCorrespondencia> _motor;
     private readonly double _limiarConfianca;
+    private readonly object _lock = new();
     private bool _disposed;
 
     public int Prioridade { get; }
@@ -48,7 +49,11 @@ public class EstrategiaCorrespondenciaML : IEstrategiaCorrespondencia, IDisposab
         foreach (var lancamento in lancamentos)
         {
             var features = ExtratorFeatures.ExtrairFeatures(transacao, lancamento);
-            var previsao = _motor.Predict(features);
+            PrevisaoCorrespondencia previsao;
+            lock (_lock)
+            {
+                previsao = _motor.Predict(features);
+            }
 
             if (previsao.Correspondencia && previsao.Probabilidade > melhorProbabilidade)
             {

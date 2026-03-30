@@ -36,7 +36,7 @@ public class TreinadorReconciliacao
                 nameof(EntradaCorrespondencia.TipoTransacaoCoerente),
                 nameof(EntradaCorrespondencia.DescricaoContemEntidade))
             .Append(_mlContext.BinaryClassification.Trainers.FastTree(
-                labelColumnName: nameof(EntradaCorrespondencia.Correspondencia),
+                labelColumnName: "Label",
                 featureColumnName: "Features",
                 numberOfLeaves: 20,
                 numberOfTrees: 100,
@@ -47,7 +47,7 @@ public class TreinadorReconciliacao
 
         IDataView previsoes = modelo.Transform(split.TestSet);
         var metricas = _mlContext.BinaryClassification.Evaluate(previsoes,
-            labelColumnName: nameof(EntradaCorrespondencia.Correspondencia));
+            labelColumnName: "Label");
 
         string? directorio = Path.GetDirectoryName(caminhoModelo);
         if (!string.IsNullOrEmpty(directorio))
@@ -68,20 +68,18 @@ public class TreinadorReconciliacao
     /// Gera pares de treino a partir de transações e lançamentos ERP,
     /// usando as estratégias existentes para encontrar pares positivos.
     /// </summary>
-    public static List<EntradaCorrespondencia> GerarParesDesTreino(
+    public static List<EntradaCorrespondencia> GerarParesDeTreino(
         IEnumerable<Transacao> transacoes,
         IEnumerable<LancamentoERP> lancamentos,
         IEnumerable<ResultadoReconciliacao> resultadosConhecidos)
     {
         List<EntradaCorrespondencia> pares = [];
         var listaLancamentos = lancamentos.ToList();
-        var idsUsados = new HashSet<string>();
 
         // Pares positivos: de resultados já reconciliados
         foreach (var resultado in resultadosConhecidos.Where(r => r.LancamentoCorrespondente != null))
         {
             pares.Add(ExtratorFeatures.ExtrairFeatures(resultado.Transacao, resultado.LancamentoCorrespondente!, true));
-            idsUsados.Add(resultado.LancamentoCorrespondente!.Id);
         }
 
         // Pares negativos: combinações que não são match
