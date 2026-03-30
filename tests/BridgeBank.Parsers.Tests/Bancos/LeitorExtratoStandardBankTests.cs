@@ -20,7 +20,7 @@ public class LeitorExtratoStandardBankTests
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
         Assert.AreEqual("Standard Bank", extrato.Banco);
-        Assert.IsNotEmpty(extrato.NumeroConta);
+        Assert.IsFalse(string.IsNullOrEmpty(extrato.NumeroConta));
     }
 
     [TestMethod]
@@ -29,7 +29,7 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.Contains("7492092919320", extrato.NumeroConta);
+        StringAssert.Contains(extrato.NumeroConta, "7492092919320");
     }
 
     [TestMethod]
@@ -38,14 +38,14 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.IsNotEmpty(extrato.Transacoes);
+        Assert.IsTrue(extrato.Transacoes.Count > 0);
 
         foreach (Transacao t in extrato.Transacoes)
         {
-            Assert.IsNotEmpty(t.Id);
+            Assert.IsFalse(string.IsNullOrEmpty(t.Id));
             Assert.AreNotEqual(DateTime.MinValue, t.Data);
-            Assert.IsGreaterThan(0, t.Valor, $"Valor deve ser positivo: {t.Valor}");
-            Assert.IsNotEmpty(t.Descricao);
+            Assert.IsTrue(t.Valor > 0, $"Valor deve ser positivo: {t.Valor}");
+            Assert.IsFalse(string.IsNullOrEmpty(t.Descricao));
         };
     }
 
@@ -70,7 +70,7 @@ public class LeitorExtratoStandardBankTests
 
         Assert.AreEqual(2025, extrato.DataInicio.Year);
         Assert.AreEqual(12, extrato.DataInicio.Month);
-        Assert.IsGreaterThanOrEqualTo(extrato.DataInicio, extrato.DataFim);
+        Assert.IsTrue(extrato.DataFim >= extrato.DataInicio);
     }
 
     [TestMethod]
@@ -79,7 +79,7 @@ public class LeitorExtratoStandardBankTests
         LeitorExtratoStandardBank leitor = new();
         ExtratoBancario extrato = leitor.LerExtrato(CaminhoFicheiro);
 
-        Assert.DoesNotContain(t => t.Descricao.Contains("Copyright", StringComparison.OrdinalIgnoreCase), extrato.Transacoes);
+        Assert.IsFalse(extrato.Transacoes.Any(t => t.Descricao.Contains("Copyright", StringComparison.OrdinalIgnoreCase)));
     }
 
     [TestMethod]
