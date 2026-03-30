@@ -14,6 +14,8 @@ public class Transacao
     public TipoTransacao Tipo { get; set; }
     public string? Beneficiario { get; set; }
     public string? ContaBancaria { get; set; }
+    public CategoriaTransacao Categoria { get; set; } = CategoriaTransacao.NaoClassificada;
+    public double ConfiancaClassificacao { get; set; }
 }
 
 public enum TipoTransacao

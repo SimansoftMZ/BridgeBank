@@ -18,5 +18,6 @@ public enum TipoCorrespondencia
     PorReferencia,
     PorValorEData,
     PorDescricao,
-    Manual
+    Manual,
+    PorML
 }

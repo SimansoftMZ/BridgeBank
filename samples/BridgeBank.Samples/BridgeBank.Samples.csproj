@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\src\BridgeBank.Core\BridgeBank.Core.csproj" />
     <ProjectReference Include="..\..\src\BridgeBank.Parsers\BridgeBank.Parsers.csproj" />
     <ProjectReference Include="..\..\src\BridgeBank.Generators\BridgeBank.Generators.csproj" />
+    <ProjectReference Include="..\..\src\BridgeBank.ML\BridgeBank.ML.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

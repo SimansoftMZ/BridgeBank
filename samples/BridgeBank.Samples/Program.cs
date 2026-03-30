@@ -85,6 +85,8 @@ while (true)
     Console.WriteLine("  1. Leitura de extractos bancários (Parsers)");
     Console.WriteLine("  2. Reconciliação bancária (Core)");
     Console.WriteLine("  3. Geração de ficheiros de pagamento (Generators)");
+    Console.WriteLine("  4. Classificação automática de transações (Core)");
+    Console.WriteLine("  5. Classificação ML.NET vs Regras (comparação)");
     Console.WriteLine();
     Console.WriteLine("  0. Sair");
     Console.WriteLine();
@@ -104,6 +106,12 @@ while (true)
             break;
         case "3":
             ExemploGeradores.Executar();
+            break;
+        case "4":
+            ExemploClassificacao.Executar(extrato);
+            break;
+        case "5":
+            ExemploClassificacaoML.Executar(extrato);
             break;
         case "0":
             return;
