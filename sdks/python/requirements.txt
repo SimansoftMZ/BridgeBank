@@ -1,0 +1,2 @@
+microsoft-kiota-bundle==1.9.8
+microsoft-kiota-authentication-azure==1.9.8

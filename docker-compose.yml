@@ -1,0 +1,10 @@
+services:
+  bridgebank-api:
+    build:
+      context: .
+      dockerfile: src/BridgeBank.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
