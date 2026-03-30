@@ -4,18 +4,28 @@ using Simansoft.BridgeBank.Core.Models;
 namespace Simansoft.BridgeBank.Core.Classificacao.Regras;
 
 /// <summary>
-/// Regra para identificar transferências entre contas próprias
+/// Regra para identificar transferências entre contas próprias.
+/// Padrões reais: "Trf intrab" (NedBank), "TRF INTER BALCAO" (Millennium BIM),
+/// "IZI TRANSFER" (mobile), "Transferencia" (Standard Bank).
 /// </summary>
 public class RegraTransferenciaInterna : RegraClassificacaoBase, IRegraClassificacao
 {
     private static readonly string[] PalavrasChave =
     [
+        // Padrões reais
+        "trf intrab", "transferencia intrab", "transferência intrab",
+        "trf inter balcao", "trf inter balcão",
         "transferencia interna", "transferência interna",
-        "transferencia entre contas", "transferência entre contas",
         "transf interna", "transf. interna",
+        "izi transfer",
+
+        // Genéricos
         "movimento interno",
         "conta propria", "conta própria",
-        "entre contas"
+        "entre contas",
+
+        // Depósitos a prazo (padrão real NedBank: "Constituicao de DP")
+        "constituicao de dp", "constituição de dp"
     ];
 
     public int Prioridade => 85;

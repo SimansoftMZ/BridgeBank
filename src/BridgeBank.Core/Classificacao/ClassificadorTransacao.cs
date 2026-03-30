@@ -23,6 +23,7 @@ public class ClassificadorTransacao
         classificador.RegistrarRegra(new RegraTransferenciaInterna());
         classificador.RegistrarRegra(new RegraEmprestimo());
         classificador.RegistrarRegra(new RegraSalario());
+        classificador.RegistrarRegra(new RegraVendaPOS());
         classificador.RegistrarRegra(new RegraPagamentoServicos());
         classificador.RegistrarRegra(new RegraPagamentoFornecedor());
         classificador.RegistrarRegra(new RegraPagamentoCliente());

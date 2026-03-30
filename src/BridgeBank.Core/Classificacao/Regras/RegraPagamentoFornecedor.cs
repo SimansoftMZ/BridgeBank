@@ -4,22 +4,30 @@ using Simansoft.BridgeBank.Core.Models;
 namespace Simansoft.BridgeBank.Core.Classificacao.Regras;
 
 /// <summary>
-/// Regra para identificar pagamentos a fornecedores
+/// Regra para identificar pagamentos a fornecedores.
+/// Padrões reais: "TRF A/F" (transferência a favor), "TRF P/O" (por ordem),
+/// "FT" (factura), pagamentos e compras.
 /// </summary>
 public class RegraPagamentoFornecedor : RegraClassificacaoBase, IRegraClassificacao
 {
     private static readonly string[] PalavrasChave =
     [
+        // Transferências a fornecedores (padrão real Millennium BIM: "TRF A/F NOVATEL")
+        "trf a/f", "trf p/o",
+
+        // Pagamentos (padrão real: "FT 10625 Anuncios Novatel")
         "fornecedor", "fornecedores",
         "pagamento fornecedor", "pagamento a fornecedor",
-        "factura fornecedor", "fatura fornecedor",
+
+        // Compras
         "compra", "compras",
         "aquisicao", "aquisição",
-        "material", "materiais",
         "mercadoria", "mercadorias",
+        "ordem compra", "ordem de compra",
+
+        // Prestadores de serviço
         "prestador", "prestadores",
-        "servico prestado", "serviço prestado",
-        "ordem compra", "ordem de compra"
+        "servico prestado", "serviço prestado"
     ];
 
     public int Prioridade => 72;
@@ -30,7 +38,6 @@ public class RegraPagamentoFornecedor : RegraClassificacaoBase, IRegraClassifica
         if (string.IsNullOrWhiteSpace(transacao.Descricao))
             return null;
 
-        // Pagamentos a fornecedores são tipicamente débitos
         if (transacao.Tipo != TipoTransacao.Debito)
             return null;
 

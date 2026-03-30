@@ -5,19 +5,19 @@ namespace Simansoft.BridgeBank.Core.Classificacao.Regras;
 
 /// <summary>
 /// Regra para identificar pagamentos ao Estado
-/// (impostos, INSS, IVA, IRPS, IRPC, taxas governamentais)
+/// (impostos, INSS, IVA, IRPS, IRPC, taxas governamentais).
+/// Nota: "Imposto Selo" bancário é tratado pela regra de Despesa Bancária.
 /// </summary>
 public class RegraPagamentoEstado : RegraClassificacaoBase, IRegraClassificacao
 {
     private static readonly string[] PalavrasChave =
     [
         "inss",
-        "iva",
         "irps",
         "irpc",
-        "imposto", "impostos",
+        "imposto sobre rendimento",
+        "imposto sobre o rendimento",
         "autoridade tributaria", "autoridade tributária",
-        "at -", "at-",
         "receita fiscal",
         "duat",
         "ispc",
@@ -26,10 +26,16 @@ public class RegraPagamentoEstado : RegraClassificacaoBase, IRegraClassificacao
         "conselho municipal",
         "alfandega", "alfândega",
         "direitos aduaneiros",
-        "contrib", "contribuicao", "contribuição",
+        "contribuicao", "contribuição",
         "seguranca social", "segurança social",
-        "obrigacao fiscal", "obrigação fiscal"
+        "obrigacao fiscal", "obrigação fiscal",
+        "declaracao periodica", "declaração periódica",
+        "retencao na fonte", "retenção na fonte"
     ];
+
+    // IVA precisa de tratamento especial: só classificar se aparecer como palavra isolada
+    // e num contexto fiscal (débito), não dentro de outras palavras
+    private static readonly string[] PalavrasChaveIVA = ["iva"];
 
     public int Prioridade => 90;
     public string Nome => "Pagamento ao Estado";
@@ -43,6 +49,8 @@ public class RegraPagamentoEstado : RegraClassificacaoBase, IRegraClassificacao
             return null;
 
         int correspondencias = ContarCorrespondencias(transacao.Descricao, PalavrasChave);
+        correspondencias += ContarCorrespondencias(transacao.Descricao, PalavrasChaveIVA);
+
         if (correspondencias == 0)
             return null;
 
