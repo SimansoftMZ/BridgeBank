@@ -21,35 +21,44 @@ echo "      OpenAPI spec generated at: $OPENAPI_SPEC"
 echo "[2/4] Restoring Kiota tool..."
 dotnet tool restore --tool-manifest "$ROOT_DIR/dotnet-tools.json" -q
 
+# Helper: run Kiota, suppressing stderr only when KIOTA_QUIET=1
+executar_kiota() {
+    if [ "${KIOTA_QUIET:-0}" = "1" ]; then
+        dotnet kiota generate "$@" 2>/dev/null
+    else
+        dotnet kiota generate "$@"
+    fi
+}
+
 # Step 3: Generate SDKs
 echo "[3/4] Generating SDKs..."
 
 echo "      -> Python..."
-dotnet kiota generate \
+executar_kiota \
     --language python \
     --openapi "$OPENAPI_SPEC" \
     --output "$ROOT_DIR/sdks/python/bridgebank" \
     --class-name BridgeBankClient \
     --namespace-name bridgebank \
-    --clean-output 2>/dev/null
+    --clean-output
 
 echo "      -> TypeScript..."
-dotnet kiota generate \
+executar_kiota \
     --language typescript \
     --openapi "$OPENAPI_SPEC" \
     --output "$ROOT_DIR/sdks/typescript/src" \
     --class-name BridgeBankClient \
     --namespace-name bridgebank \
-    --clean-output 2>/dev/null
+    --clean-output
 
 echo "      -> Java..."
-dotnet kiota generate \
+executar_kiota \
     --language java \
     --openapi "$OPENAPI_SPEC" \
     --output "$ROOT_DIR/sdks/java/src/main/java/bridgebank" \
     --class-name BridgeBankClient \
     --namespace-name bridgebank \
-    --clean-output 2>/dev/null
+    --clean-output
 
 # Step 4: Summary
 echo "[4/4] Done!"

@@ -18,35 +18,48 @@ Write-Host "      OpenAPI spec generated at: $OpenApiSpec"
 Write-Host "[2/4] Restoring Kiota tool..."
 dotnet tool restore --tool-manifest "$RootDir\dotnet-tools.json" -q
 
+# Helper: run Kiota, suppressing stderr only when KIOTA_QUIET=1
+function Invoke-Kiota {
+    param([string[]]$KiotaArgs)
+    if ($Env:KIOTA_QUIET -eq "1") {
+        dotnet kiota generate @KiotaArgs 2>$null
+    } else {
+        dotnet kiota generate @KiotaArgs
+    }
+}
+
 # Step 3: Generate SDKs
 Write-Host "[3/4] Generating SDKs..."
 
 Write-Host "      -> Python..."
-dotnet kiota generate `
-    --language python `
-    --openapi $OpenApiSpec `
-    --output "$RootDir\sdks\python\bridgebank" `
-    --class-name BridgeBankClient `
-    --namespace-name bridgebank `
-    --clean-output 2>$null
+Invoke-Kiota @(
+    "--language", "python",
+    "--openapi", $OpenApiSpec,
+    "--output", "$RootDir\sdks\python\bridgebank",
+    "--class-name", "BridgeBankClient",
+    "--namespace-name", "bridgebank",
+    "--clean-output"
+)
 
 Write-Host "      -> TypeScript..."
-dotnet kiota generate `
-    --language typescript `
-    --openapi $OpenApiSpec `
-    --output "$RootDir\sdks\typescript\src" `
-    --class-name BridgeBankClient `
-    --namespace-name bridgebank `
-    --clean-output 2>$null
+Invoke-Kiota @(
+    "--language", "typescript",
+    "--openapi", $OpenApiSpec,
+    "--output", "$RootDir\sdks\typescript\src",
+    "--class-name", "BridgeBankClient",
+    "--namespace-name", "bridgebank",
+    "--clean-output"
+)
 
 Write-Host "      -> Java..."
-dotnet kiota generate `
-    --language java `
-    --openapi $OpenApiSpec `
-    --output "$RootDir\sdks\java\src\main\java\bridgebank" `
-    --class-name BridgeBankClient `
-    --namespace-name bridgebank `
-    --clean-output 2>$null
+Invoke-Kiota @(
+    "--language", "java",
+    "--openapi", $OpenApiSpec,
+    "--output", "$RootDir\sdks\java\src\main\java\bridgebank",
+    "--class-name", "BridgeBankClient",
+    "--namespace-name", "bridgebank",
+    "--clean-output"
+)
 
 # Step 4: Summary
 Write-Host "[4/4] Done!"

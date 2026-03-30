@@ -19,13 +19,13 @@ public record TransacaoDto(
     DateTime Data,
     decimal Valor,
     string Descricao,
-    string? Referencia,
-    string? DocumentoOrigem,
-    string Tipo,
-    string? Beneficiario,
-    string? ContaBancaria,
-    string Categoria,
-    double ConfiancaClassificacao);
+    string? Referencia = null,
+    string? DocumentoOrigem = null,
+    string Tipo = "Debito",
+    string? Beneficiario = null,
+    string? ContaBancaria = null,
+    string Categoria = "NaoClassificada",
+    double ConfiancaClassificacao = 0);
 
 /// <summary>
 /// Lançamento do sistema ERP
@@ -44,11 +44,11 @@ public record LancamentoERPDto(
     DateTime Data,
     decimal Valor,
     string Descricao,
-    string? Referencia,
-    string? NumeroDocumento,
-    string? Fornecedor,
-    string? Cliente,
-    string Status);
+    string? Referencia = null,
+    string? NumeroDocumento = null,
+    string? Fornecedor = null,
+    string? Cliente = null,
+    string Status = "Pendente");
 
 /// <summary>
 /// Extrato bancário com metadados e lista de transações
@@ -114,6 +114,24 @@ public record PagamentoDto(
     string Beneficiario,
     string ContaBeneficiario,
     string BancoBeneficiario,
-    string? Referencia,
-    string? Descricao,
-    string Tipo);
+    string? Referencia = null,
+    string? Descricao = null,
+    string Tipo = "Transferencia");
+
+/// <summary>
+/// Resultado da classificação de uma transação individual
+/// </summary>
+/// <param name="Transacao">Dados da transação classificada</param>
+/// <param name="Classificacao">Resultado da classificação automática</param>
+public record ClassificacaoTransacaoDto(
+    TransacaoDto Transacao,
+    ResultadoClassificacaoDto Classificacao);
+
+/// <summary>
+/// Resultado da classificação de todas as transações de um extrato bancário
+/// </summary>
+/// <param name="Extrato">Extrato bancário processado</param>
+/// <param name="Classificacoes">Resultados de classificação de cada transação</param>
+public record ClassificacaoExtratoDto(
+    ExtratoBancarioDto Extrato,
+    List<ResultadoClassificacaoDto> Classificacoes);

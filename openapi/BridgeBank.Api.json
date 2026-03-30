@@ -25,7 +25,17 @@
         "operationId": "ListarParsers",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -53,7 +63,12 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/IFormFile"
+                "type": "object",
+                "properties": {
+                  "arquivo": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
               }
             }
           },
@@ -91,7 +106,17 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassificacaoTransacaoDto"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -106,7 +131,12 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/IFormFile"
+                "type": "object",
+                "properties": {
+                  "arquivo": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
               }
             }
           },
@@ -114,7 +144,14 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassificacaoExtratoDto"
+                }
+              }
+            }
           }
         }
       }
@@ -137,7 +174,17 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResultadoReconciliacaoDto"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -173,7 +220,17 @@
         "operationId": "ListarCategorias",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -186,7 +243,17 @@
         "operationId": "ListarTiposTransacao",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -199,7 +266,17 @@
         "operationId": "ListarTiposCorrespondencia",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -207,6 +284,39 @@
   },
   "components": {
     "schemas": {
+      "ClassificacaoExtratoDto": {
+        "required": [
+          "extrato",
+          "classificacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "extrato": {
+            "$ref": "#/components/schemas/ExtratoBancarioDto"
+          },
+          "classificacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultadoClassificacaoDto"
+            }
+          }
+        }
+      },
+      "ClassificacaoTransacaoDto": {
+        "required": [
+          "transacao",
+          "classificacao"
+        ],
+        "type": "object",
+        "properties": {
+          "transacao": {
+            "$ref": "#/components/schemas/TransacaoDto"
+          },
+          "classificacao": {
+            "$ref": "#/components/schemas/ResultadoClassificacaoDto"
+          }
+        }
+      },
       "ClassificarTransacoesRequest": {
         "required": [
           "transacoes"
@@ -298,12 +408,7 @@
           "id",
           "data",
           "valor",
-          "descricao",
-          "referencia",
-          "numeroDocumento",
-          "fornecedor",
-          "cliente",
-          "status"
+          "descricao"
         ],
         "type": "object",
         "properties": {
@@ -350,7 +455,8 @@
             ]
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "default": "Pendente"
           }
         }
       },
@@ -361,10 +467,7 @@
           "valor",
           "beneficiario",
           "contaBeneficiario",
-          "bancoBeneficiario",
-          "referencia",
-          "descricao",
-          "tipo"
+          "bancoBeneficiario"
         ],
         "type": "object",
         "properties": {
@@ -405,7 +508,8 @@
             ]
           },
           "tipo": {
-            "type": "string"
+            "type": "string",
+            "default": "Transferencia"
           }
         }
       },
@@ -430,19 +534,78 @@
           }
         }
       },
+      "ResultadoClassificacaoDto": {
+        "required": [
+          "categoria",
+          "confianca",
+          "regraAplicada"
+        ],
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "type": "string"
+          },
+          "confianca": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "regraAplicada": {
+            "type": "string"
+          }
+        }
+      },
+      "ResultadoReconciliacaoDto": {
+        "required": [
+          "transacao",
+          "lancamentoCorrespondente",
+          "tipoCorrespondencia",
+          "nivelConfianca",
+          "observacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "transacao": {
+            "$ref": "#/components/schemas/TransacaoDto"
+          },
+          "lancamentoCorrespondente": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LancamentoERPDto"
+              }
+            ]
+          },
+          "tipoCorrespondencia": {
+            "type": "string"
+          },
+          "nivelConfianca": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "observacoes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "TransacaoDto": {
         "required": [
           "id",
           "data",
           "valor",
-          "descricao",
-          "referencia",
-          "documentoOrigem",
-          "tipo",
-          "beneficiario",
-          "contaBancaria",
-          "categoria",
-          "confiancaClassificacao"
+          "descricao"
         ],
         "type": "object",
         "properties": {
@@ -477,7 +640,8 @@
             ]
           },
           "tipo": {
-            "type": "string"
+            "type": "string",
+            "default": "Debito"
           },
           "beneficiario": {
             "type": [
@@ -492,7 +656,8 @@
             ]
           },
           "categoria": {
-            "type": "string"
+            "type": "string",
+            "default": "NaoClassificada"
           },
           "confiancaClassificacao": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
@@ -500,7 +665,8 @@
               "number",
               "string"
             ],
-            "format": "double"
+            "format": "double",
+            "default": 0
           }
         }
       }

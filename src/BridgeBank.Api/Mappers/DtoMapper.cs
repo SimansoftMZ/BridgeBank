@@ -14,10 +14,10 @@ public static class DtoMapper
         Descricao = dto.Descricao,
         Referencia = dto.Referencia,
         DocumentoOrigem = dto.DocumentoOrigem,
-        Tipo = Enum.Parse<TipoTransacao>(dto.Tipo, ignoreCase: true),
+        Tipo = ParseEnum<TipoTransacao>(dto.Tipo, nameof(dto.Tipo)),
         Beneficiario = dto.Beneficiario,
         ContaBancaria = dto.ContaBancaria,
-        Categoria = Enum.Parse<CategoriaTransacao>(dto.Categoria, ignoreCase: true),
+        Categoria = ParseEnum<CategoriaTransacao>(dto.Categoria, nameof(dto.Categoria)),
         ConfiancaClassificacao = dto.ConfiancaClassificacao
     };
 
@@ -44,7 +44,7 @@ public static class DtoMapper
         NumeroDocumento = dto.NumeroDocumento,
         Fornecedor = dto.Fornecedor,
         Cliente = dto.Cliente,
-        Status = Enum.Parse<StatusLancamento>(dto.Status, ignoreCase: true)
+        Status = ParseEnum<StatusLancamento>(dto.Status, nameof(dto.Status))
     };
 
     public static LancamentoERPDto ToDto(this LancamentoERP model) => new(
@@ -80,7 +80,7 @@ public static class DtoMapper
         BancoBeneficiario = dto.BancoBeneficiario,
         Referencia = dto.Referencia,
         Descricao = dto.Descricao,
-        Tipo = Enum.Parse<TipoPagamento>(dto.Tipo, ignoreCase: true)
+        Tipo = ParseEnum<TipoPagamento>(dto.Tipo, nameof(dto.Tipo))
     };
 
     public static ExtratoBancarioDto ToDto(this ExtratoBancario model) => new(
@@ -91,4 +91,13 @@ public static class DtoMapper
         model.SaldoInicial,
         model.SaldoFinal,
         model.Transacoes.Select(t => t.ToDto()).ToList());
+
+    private static TEnum ParseEnum<TEnum>(string value, string fieldName) where TEnum : struct, Enum
+    {
+        if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var result))
+            return result;
+
+        var validValues = string.Join(", ", Enum.GetNames<TEnum>());
+        throw new ArgumentException($"Valor inválido para '{fieldName}': '{value}'. Valores aceites: {validValues}.");
+    }
 }

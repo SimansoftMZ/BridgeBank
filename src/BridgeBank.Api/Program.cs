@@ -17,7 +17,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+        if (allowedOrigins is { Length: > 0 })
+            policy.WithOrigins(allowedOrigins).AllowAnyMethod().AllowAnyHeader();
+        else
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
 });
 
 // Register parsers
@@ -50,7 +56,8 @@ app.MapGet("/api/bancos/parsers", (IEnumerable<ILeitorExtrato> leitores) =>
     return Results.Ok(bancos);
 })
 .WithName("ListarParsers")
-.WithTags("Bancos");
+.WithTags("Bancos")
+.Produces<List<string>>(200);
 
 app.MapGet("/api/bancos/geradores", (IEnumerable<IGeradorFicheiroPagamento> geradores) =>
 {
@@ -61,19 +68,17 @@ app.MapGet("/api/bancos/geradores", (IEnumerable<IGeradorFicheiroPagamento> gera
 .WithTags("Bancos");
 
 // ─── Extratos (Parsing) ──────────────────────────────────────────────
-app.MapPost("/api/extratos/parse", async (HttpRequest request, IEnumerable<ILeitorExtrato> leitores) =>
+app.MapPost("/api/extratos/parse", async (IFormFile? arquivo, IEnumerable<ILeitorExtrato> leitores) =>
 {
-    var form = await request.ReadFormAsync();
-    var file = form.Files.FirstOrDefault();
-    if (file is null || file.Length == 0)
+    if (arquivo is null || arquivo.Length == 0)
         return Results.BadRequest(new { error = "Nenhum ficheiro enviado." });
 
-    var tempPath = Path.Combine(Path.GetTempPath(), $"bridgebank_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
+    var tempPath = Path.Combine(Path.GetTempPath(), $"bridgebank_{Guid.NewGuid()}{Path.GetExtension(arquivo.FileName)}");
     try
     {
         await using (var stream = File.Create(tempPath))
         {
-            await file.CopyToAsync(stream);
+            await arquivo.CopyToAsync(stream);
         }
 
         var leitor = leitores.FirstOrDefault(l => l.SuportaArquivo(tempPath));
@@ -92,43 +97,44 @@ app.MapPost("/api/extratos/parse", async (HttpRequest request, IEnumerable<ILeit
 .DisableAntiforgery()
 .WithName("ParseExtrato")
 .WithTags("Extratos")
-.Accepts<IFormFile>("multipart/form-data")
 .Produces<ExtratoBancarioDto>(200);
 
 // ─── Classificação ───────────────────────────────────────────────────
 app.MapPost("/api/classificacao", (ClassificarTransacoesRequest request) =>
 {
-    using var classificador = ClassificadorTransacao.CriarComRegrasPadrao();
-
-    var resultados = request.Transacoes.Select(dto =>
+    try
     {
-        var transacao = dto.ToModel();
-        var resultado = classificador.Classificar(transacao);
-        return new
-        {
-            Transacao = transacao.ToDto(),
-            Classificacao = resultado.ToDto()
-        };
-    }).ToList();
+        using var classificador = ClassificadorTransacao.CriarComRegrasPadrao();
 
-    return Results.Ok(resultados);
+        var resultados = request.Transacoes.Select(dto =>
+        {
+            var transacao = dto.ToModel();
+            var resultado = classificador.Classificar(transacao);
+            return new ClassificacaoTransacaoDto(transacao.ToDto(), resultado.ToDto());
+        }).ToList();
+
+        return Results.Ok(resultados);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
 })
 .WithName("ClassificarTransacoes")
-.WithTags("Classificação");
+.WithTags("Classificação")
+.Produces<List<ClassificacaoTransacaoDto>>(200);
 
-app.MapPost("/api/classificacao/extrato", async (HttpRequest request, IEnumerable<ILeitorExtrato> leitores) =>
+app.MapPost("/api/classificacao/extrato", async (IFormFile? arquivo, IEnumerable<ILeitorExtrato> leitores) =>
 {
-    var form = await request.ReadFormAsync();
-    var file = form.Files.FirstOrDefault();
-    if (file is null || file.Length == 0)
+    if (arquivo is null || arquivo.Length == 0)
         return Results.BadRequest(new { error = "Nenhum ficheiro enviado." });
 
-    var tempPath = Path.Combine(Path.GetTempPath(), $"bridgebank_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
+    var tempPath = Path.Combine(Path.GetTempPath(), $"bridgebank_{Guid.NewGuid()}{Path.GetExtension(arquivo.FileName)}");
     try
     {
         await using (var stream = File.Create(tempPath))
         {
-            await file.CopyToAsync(stream);
+            await arquivo.CopyToAsync(stream);
         }
 
         var leitor = leitores.FirstOrDefault(l => l.SuportaArquivo(tempPath));
@@ -139,11 +145,7 @@ app.MapPost("/api/classificacao/extrato", async (HttpRequest request, IEnumerabl
         using var classificador = ClassificadorTransacao.CriarComRegrasPadrao();
         var resultados = classificador.ClassificarExtrato(extrato);
 
-        return Results.Ok(new
-        {
-            Extrato = extrato.ToDto(),
-            Classificacoes = resultados.Select(r => r.ToDto()).ToList()
-        });
+        return Results.Ok(new ClassificacaoExtratoDto(extrato.ToDto(), resultados.Select(r => r.ToDto()).ToList()));
     }
     finally
     {
@@ -154,58 +156,86 @@ app.MapPost("/api/classificacao/extrato", async (HttpRequest request, IEnumerabl
 .DisableAntiforgery()
 .WithName("ClassificarExtrato")
 .WithTags("Classificação")
-.Accepts<IFormFile>("multipart/form-data");
+.Produces<ClassificacaoExtratoDto>(200);
 
 // ─── Reconciliação ───────────────────────────────────────────────────
 app.MapPost("/api/reconciliacao", (ReconciliarRequest request) =>
 {
-    var motor = new MotorReconciliacao();
-    motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
-    motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorValorEData());
-    motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorDescricao());
+    try
+    {
+        var motor = new MotorReconciliacao();
+        motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorReferencia());
+        motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorValorEData());
+        motor.RegistrarEstrategia(new EstrategiaCorrespondenciaPorDescricao());
 
-    var transacoes = request.Transacoes.Select(t => t.ToModel()).ToList();
-    var lancamentos = request.LancamentosERP.Select(l => l.ToModel()).ToList();
+        var transacoes = request.Transacoes.Select(t => t.ToModel()).ToList();
+        var lancamentos = request.LancamentosERP.Select(l => l.ToModel()).ToList();
 
-    var resultados = motor.Reconciliar(transacoes, lancamentos);
+        var resultados = motor.Reconciliar(transacoes, lancamentos);
 
-    return Results.Ok(resultados.Select(r => r.ToDto()).ToList());
+        return Results.Ok(resultados.Select(r => r.ToDto()).ToList());
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
 })
 .WithName("Reconciliar")
-.WithTags("Reconciliação");
+.WithTags("Reconciliação")
+.Produces<List<ResultadoReconciliacaoDto>>(200);
 
 // ─── Geração de Pagamentos ──────────────────────────────────────────
 app.MapPost("/api/pagamentos/gerar", (GerarPagamentoRequest request, IEnumerable<IGeradorFicheiroPagamento> geradores) =>
 {
-    var gerador = geradores.FirstOrDefault(g =>
-        g.GetType().Name.Contains(request.Banco, StringComparison.OrdinalIgnoreCase));
+    var geradoresComNome = geradores
+        .Select(g => (Gerador: g, Nome: g.GetType().Name.Replace("GeradorPagamento", "")))
+        .ToList();
+
+    if (string.IsNullOrWhiteSpace(request.Banco))
+        return Results.BadRequest(new
+        {
+            error = "O nome do banco é obrigatório.",
+            bancosSuportados = geradoresComNome.Select(x => x.Nome).ToList()
+        });
+
+    var nomeNormalizado = request.Banco.Trim();
+    var gerador = geradoresComNome
+        .FirstOrDefault(x => string.Equals(x.Nome, nomeNormalizado, StringComparison.OrdinalIgnoreCase))
+        .Gerador;
 
     if (gerador is null)
         return Results.BadRequest(new
         {
             error = $"Gerador para o banco '{request.Banco}' não encontrado.",
-            bancosSuportados = geradores.Select(g => g.GetType().Name.Replace("GeradorPagamento", "")).ToList()
+            bancosSuportados = geradoresComNome.Select(x => x.Nome).ToList()
         });
-
-    var pagamentos = request.Pagamentos.Select(p => p.ToModel()).ToList();
-    var tempPath = Path.Combine(Path.GetTempPath(), $"pagamento_{Guid.NewGuid()}.{gerador.FormatoFicheiro}");
 
     try
     {
-        gerador.GerarFicheiro(pagamentos, tempPath);
-        var bytes = File.ReadAllBytes(tempPath);
-        var contentType = gerador.FormatoFicheiro.ToLowerInvariant() switch
+        var pagamentos = request.Pagamentos.Select(p => p.ToModel()).ToList();
+        var tempPath = Path.Combine(Path.GetTempPath(), $"pagamento_{Guid.NewGuid()}.{gerador.FormatoFicheiro}");
+
+        try
         {
-            "xml" => "application/xml",
-            "csv" => "text/csv",
-            _ => "text/plain"
-        };
-        return Results.File(bytes, contentType, $"pagamento.{gerador.FormatoFicheiro}");
+            gerador.GerarFicheiro(pagamentos, tempPath);
+            var bytes = File.ReadAllBytes(tempPath);
+            var contentType = gerador.FormatoFicheiro.ToLowerInvariant() switch
+            {
+                "xml" => "application/xml",
+                "csv" => "text/csv",
+                _ => "text/plain"
+            };
+            return Results.File(bytes, contentType, $"pagamento.{gerador.FormatoFicheiro}");
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+                File.Delete(tempPath);
+        }
     }
-    finally
+    catch (ArgumentException ex)
     {
-        if (File.Exists(tempPath))
-            File.Delete(tempPath);
+        return Results.BadRequest(new { error = ex.Message });
     }
 })
 .WithName("GerarPagamento")
@@ -215,16 +245,19 @@ app.MapPost("/api/pagamentos/gerar", (GerarPagamentoRequest request, IEnumerable
 app.MapGet("/api/enums/categorias", () =>
     Results.Ok(Enum.GetNames<CategoriaTransacao>()))
 .WithName("ListarCategorias")
-.WithTags("Referência");
+.WithTags("Referência")
+.Produces<string[]>(200);
 
 app.MapGet("/api/enums/tipos-transacao", () =>
     Results.Ok(Enum.GetNames<TipoTransacao>()))
 .WithName("ListarTiposTransacao")
-.WithTags("Referência");
+.WithTags("Referência")
+.Produces<string[]>(200);
 
 app.MapGet("/api/enums/tipos-correspondencia", () =>
     Results.Ok(Enum.GetNames<TipoCorrespondencia>()))
 .WithName("ListarTiposCorrespondencia")
-.WithTags("Referência");
+.WithTags("Referência")
+.Produces<string[]>(200);
 
 app.Run();
