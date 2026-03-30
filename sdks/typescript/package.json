@@ -1,0 +1,15 @@
+{
+  "name": "@simansoft/bridgebank-sdk",
+  "version": "1.0.0",
+  "description": "BridgeBank API client for TypeScript/JavaScript - Bank reconciliation, transaction classification, and payment generation",
+  "main": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimansoftMZ/BridgeBank"
+  },
+  "author": "Simansoft",
+  "license": "MIT",
+  "dependencies": {
+    "@microsoft/kiota-bundle": "1.0.0-preview.99"
+  }
+}

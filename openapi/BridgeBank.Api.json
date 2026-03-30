@@ -1,0 +1,698 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Simansoft.BridgeBank.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/bancos/parsers": {
+      "get": {
+        "tags": [
+          "Bancos"
+        ],
+        "operationId": "ListarParsers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bancos/geradores": {
+      "get": {
+        "tags": [
+          "Bancos"
+        ],
+        "operationId": "ListarGeradores",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/extratos/parse": {
+      "post": {
+        "tags": [
+          "Extratos"
+        ],
+        "operationId": "ParseExtrato",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "arquivo": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtratoBancarioDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/classificacao": {
+      "post": {
+        "tags": [
+          "Classificação"
+        ],
+        "operationId": "ClassificarTransacoes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassificarTransacoesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassificacaoTransacaoDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/classificacao/extrato": {
+      "post": {
+        "tags": [
+          "Classificação"
+        ],
+        "operationId": "ClassificarExtrato",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "arquivo": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassificacaoExtratoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reconciliacao": {
+      "post": {
+        "tags": [
+          "Reconciliação"
+        ],
+        "operationId": "Reconciliar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconciliarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResultadoReconciliacaoDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pagamentos/gerar": {
+      "post": {
+        "tags": [
+          "Pagamentos"
+        ],
+        "operationId": "GerarPagamento",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GerarPagamentoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/enums/categorias": {
+      "get": {
+        "tags": [
+          "Referência"
+        ],
+        "operationId": "ListarCategorias",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/enums/tipos-transacao": {
+      "get": {
+        "tags": [
+          "Referência"
+        ],
+        "operationId": "ListarTiposTransacao",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/enums/tipos-correspondencia": {
+      "get": {
+        "tags": [
+          "Referência"
+        ],
+        "operationId": "ListarTiposCorrespondencia",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClassificacaoExtratoDto": {
+        "required": [
+          "extrato",
+          "classificacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "extrato": {
+            "$ref": "#/components/schemas/ExtratoBancarioDto"
+          },
+          "classificacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultadoClassificacaoDto"
+            }
+          }
+        }
+      },
+      "ClassificacaoTransacaoDto": {
+        "required": [
+          "transacao",
+          "classificacao"
+        ],
+        "type": "object",
+        "properties": {
+          "transacao": {
+            "$ref": "#/components/schemas/TransacaoDto"
+          },
+          "classificacao": {
+            "$ref": "#/components/schemas/ResultadoClassificacaoDto"
+          }
+        }
+      },
+      "ClassificarTransacoesRequest": {
+        "required": [
+          "transacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "transacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransacaoDto"
+            }
+          }
+        }
+      },
+      "ExtratoBancarioDto": {
+        "required": [
+          "banco",
+          "numeroConta",
+          "dataInicio",
+          "dataFim",
+          "saldoInicial",
+          "saldoFinal",
+          "transacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "banco": {
+            "type": "string"
+          },
+          "numeroConta": {
+            "type": "string"
+          },
+          "dataInicio": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "saldoInicial": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "saldoFinal": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "transacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransacaoDto"
+            }
+          }
+        }
+      },
+      "GerarPagamentoRequest": {
+        "required": [
+          "banco",
+          "pagamentos"
+        ],
+        "type": "object",
+        "properties": {
+          "banco": {
+            "type": "string"
+          },
+          "pagamentos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagamentoDto"
+            }
+          }
+        }
+      },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
+      "LancamentoERPDto": {
+        "required": [
+          "id",
+          "data",
+          "valor",
+          "descricao"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "numeroDocumento": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fornecedor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "cliente": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "default": "Pendente"
+          }
+        }
+      },
+      "PagamentoDto": {
+        "required": [
+          "id",
+          "dataPagamento",
+          "valor",
+          "beneficiario",
+          "contaBeneficiario",
+          "bancoBeneficiario"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "dataPagamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "beneficiario": {
+            "type": "string"
+          },
+          "contaBeneficiario": {
+            "type": "string"
+          },
+          "bancoBeneficiario": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "descricao": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tipo": {
+            "type": "string",
+            "default": "Transferencia"
+          }
+        }
+      },
+      "ReconciliarRequest": {
+        "required": [
+          "transacoes",
+          "lancamentosERP"
+        ],
+        "type": "object",
+        "properties": {
+          "transacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransacaoDto"
+            }
+          },
+          "lancamentosERP": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LancamentoERPDto"
+            }
+          }
+        }
+      },
+      "ResultadoClassificacaoDto": {
+        "required": [
+          "categoria",
+          "confianca",
+          "regraAplicada"
+        ],
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "type": "string"
+          },
+          "confianca": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "regraAplicada": {
+            "type": "string"
+          }
+        }
+      },
+      "ResultadoReconciliacaoDto": {
+        "required": [
+          "transacao",
+          "lancamentoCorrespondente",
+          "tipoCorrespondencia",
+          "nivelConfianca",
+          "observacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "transacao": {
+            "$ref": "#/components/schemas/TransacaoDto"
+          },
+          "lancamentoCorrespondente": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LancamentoERPDto"
+              }
+            ]
+          },
+          "tipoCorrespondencia": {
+            "type": "string"
+          },
+          "nivelConfianca": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "observacoes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TransacaoDto": {
+        "required": [
+          "id",
+          "data",
+          "valor",
+          "descricao"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "documentoOrigem": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tipo": {
+            "type": "string",
+            "default": "Debito"
+          },
+          "beneficiario": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "contaBancaria": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "categoria": {
+            "type": "string",
+            "default": "NaoClassificada"
+          },
+          "confiancaClassificacao": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double",
+            "default": 0
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Bancos"
+    },
+    {
+      "name": "Extratos"
+    },
+    {
+      "name": "Classificação"
+    },
+    {
+      "name": "Reconciliação"
+    },
+    {
+      "name": "Pagamentos"
+    },
+    {
+      "name": "Referência"
+    }
+  ]
+}
