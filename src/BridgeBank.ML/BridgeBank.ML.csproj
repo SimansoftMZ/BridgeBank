@@ -6,7 +6,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>false</IsAotCompatible>
+    <PackageId>Simansoft.BridgeBank.ML</PackageId>
+    <Title>Simansoft.BridgeBank.ML</Title>
+    <Authors>Simansoft</Authors>
+    <AssemblyName>Simansoft.BridgeBank.ML</AssemblyName>
+    <PackageProjectUrl>https://github.com/SimansoftMZ/BridgeBank</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SimansoftMZ/BridgeBank</RepositoryUrl>
+	<Version Condition="'$(PackageVersion)' != ''">$(PackageVersion)</Version>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+
+	<IsPackable>true</IsPackable>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BridgeBank.Core\BridgeBank.Core.csproj" />
