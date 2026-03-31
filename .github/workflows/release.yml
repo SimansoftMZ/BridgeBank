@@ -107,7 +107,7 @@ jobs:
           file: src/BridgeBank.Api/Dockerfile
           push: true
           tags: |
-            simansoft/bridgebank-api:${{ steps.version.outputs.VERSION }}
-            simansoft/bridgebank-api:latest
+            simansoftmz/bridgebank-api:${{ steps.version.outputs.VERSION }}
+            simansoftmz/bridgebank-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
