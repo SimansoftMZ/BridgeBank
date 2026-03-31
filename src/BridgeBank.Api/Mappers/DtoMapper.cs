@@ -90,7 +90,7 @@ public static class DtoMapper
         model.DataFim,
         model.SaldoInicial,
         model.SaldoFinal,
-        model.Transacoes.Select(t => t.ToDto()).ToList());
+        [.. model.Transacoes.Select(t => t.ToDto())]);
 
     private static TEnum ParseEnum<TEnum>(string value, string fieldName) where TEnum : struct, Enum
     {
