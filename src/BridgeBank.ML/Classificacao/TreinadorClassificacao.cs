@@ -1,6 +1,5 @@
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using Microsoft.ML.Transforms;
 using Simansoft.BridgeBank.ML.Dados;
 
 namespace Simansoft.BridgeBank.ML.Classificacao;
@@ -43,7 +42,7 @@ public class TreinadorClassificacao(int? seed = 42)
             .Append(_mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
 
         // Treinar
-        TransformerChain<KeyToValueMappingTransformer> modelo = pipeline.Fit(split.TrainSet);
+        ITransformer modelo = pipeline.Fit(split.TrainSet);
 
         // Avaliar
         IDataView previsoes = modelo.Transform(split.TestSet);
