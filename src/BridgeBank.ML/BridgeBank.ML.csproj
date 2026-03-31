@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>false</IsAotCompatible>
+    <PackageId>Simansoft.BridgeBank.ML</PackageId>
+    <Title>Simansoft.BridgeBank.ML</Title>
+    <Authors>Simansoft</Authors>
+    <AssemblyName>Simansoft.BridgeBank.ML</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

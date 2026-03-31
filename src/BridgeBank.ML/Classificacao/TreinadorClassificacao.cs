@@ -1,4 +1,6 @@
 using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
 using Simansoft.BridgeBank.ML.Dados;
 
 namespace Simansoft.BridgeBank.ML.Classificacao;
@@ -7,14 +9,9 @@ namespace Simansoft.BridgeBank.ML.Classificacao;
 /// Pipeline de treino do modelo de classificação de transações.
 /// Usa LbfgsMaximumEntropy com featurização de texto (char/word n-grams).
 /// </summary>
-public class TreinadorClassificacao
+public class TreinadorClassificacao(int? seed = 42)
 {
-    private readonly MLContext _mlContext;
-
-    public TreinadorClassificacao(int? seed = 42)
-    {
-        _mlContext = new MLContext(seed);
-    }
+    private readonly MLContext _mlContext = new(seed);
 
     /// <summary>
     /// Treina o modelo com dados sintéticos gerados automaticamente
@@ -46,7 +43,7 @@ public class TreinadorClassificacao
             .Append(_mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
 
         // Treinar
-        ITransformer modelo = pipeline.Fit(split.TrainSet);
+        TransformerChain<KeyToValueMappingTransformer> modelo = pipeline.Fit(split.TrainSet);
 
         // Avaliar
         IDataView previsoes = modelo.Transform(split.TestSet);
