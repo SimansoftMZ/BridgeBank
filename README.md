@@ -337,21 +337,9 @@ dotnet test tests/BridgeBank.Core.Tests
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-## Convenções de Código
-
-- **Código em português**: classes, métodos, variáveis e comentários em português
-- **Estrutura em inglês**: nomes de projectos, pastas e namespaces em inglês
-- **Documentação XML**: todas as classes e métodos públicos têm comentários XML
-
 ## Contribuição
 
-Contribuições são bem-vindas! Por favor:
-
-1. Faça fork do projecto
-2. Crie uma branch para a sua funcionalidade (`git checkout -b feature/MinhaFuncionalidade`)
-3. Faça commit das suas alterações (`git commit -m 'Adicionar MinhaFuncionalidade'`)
-4. Faça push para a branch (`git push origin feature/MinhaFuncionalidade`)
-5. Abra um Pull Request
+Contribuições são bem-vindas! Consulte o [CONTRIBUTING.md](CONTRIBUTING.md) para convenções de código, estratégia de branches, CI/CD e instruções detalhadas sobre como submeter Pull Requests.
 
 ## Licença
 
