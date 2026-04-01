@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/Simansoft.BridgeBank.Core)](https://www.nuget.org/packages/Simansoft.BridgeBank.Core)
 [![Docker](https://img.shields.io/docker/v/simansoft/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoftmz/bridgebank-api)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-NuGet%20%7C%20Docker-blue?logo=github)](https://github.com/orgs/SimansoftMZ/packages)
 
 O BridgeBank é um toolkit .NET de código aberto para reconciliação bancária em sistemas ERP. Oferece correspondência inteligente de transacções, classificação automática (baseada em regras e ML), leitura de extractos bancários e geração de ficheiros de pagamento para bancos moçambicanos e internacionais.
 
@@ -33,6 +34,8 @@ Disponível como **pacotes NuGet** para .NET, uma **API REST** (Docker) para qua
 
 ### Pacotes NuGet (.NET)
 
+Os pacotes estão disponíveis no [NuGet.org](https://www.nuget.org/packages?q=Simansoft.BridgeBank) e no [GitHub Packages](https://github.com/orgs/SimansoftMZ/packages):
+
 ```bash
 dotnet add package Simansoft.BridgeBank.Core
 dotnet add package Simansoft.BridgeBank.Parsers
@@ -45,11 +48,28 @@ Para classificação e reconciliação baseadas em ML:
 dotnet add package Simansoft.BridgeBank.ML
 ```
 
+Para utilizar os pacotes via GitHub Packages, adicione o registo ao seu `nuget.config`:
+
+```xml
+<configuration>
+  <packageSources>
+    <add key="github-simansoftmz" value="https://nuget.pkg.github.com/SimansoftMZ/index.json" />
+  </packageSources>
+</configuration>
+```
+
 ### Docker (qualquer linguagem)
 
+A imagem Docker está disponível no [Docker Hub](https://hub.docker.com/r/simansoftmz/bridgebank-api) e no [GitHub Container Registry](https://github.com/SimansoftMZ/BridgeBank/pkgs/container/bridgebank-api):
+
 ```bash
-docker pull simansoft/bridgebank-api
-docker run -p 8080:8080 simansoft/bridgebank-api
+# Via Docker Hub
+docker pull simansoftmz/bridgebank-api
+docker run -p 8080:8080 simansoftmz/bridgebank-api
+
+# Via GitHub Container Registry
+docker pull ghcr.io/simansoftmz/bridgebank-api
+docker run -p 8080:8080 ghcr.io/simansoftmz/bridgebank-api
 ```
 
 Ou com Docker Compose:
