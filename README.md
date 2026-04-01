@@ -3,7 +3,7 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/Simansoft.BridgeBank.Core)](https://www.nuget.org/packages/Simansoft.BridgeBank.Core)
-[![Docker](https://img.shields.io/docker/v/simansoft/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoftmz/bridgebank-api)
+[![Docker](https://img.shields.io/docker/v/simansoftmz/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoftmz/bridgebank-api)
 [![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-NuGet%20%7C%20Docker-blue?logo=github)](https://github.com/orgs/SimansoftMZ/packages)
 
 O BridgeBank é um toolkit .NET de código aberto para reconciliação bancária em sistemas ERP. Oferece correspondência inteligente de transacções, classificação automática (baseada em regras e ML), leitura de extractos bancários e geração de ficheiros de pagamento para bancos moçambicanos e internacionais.
