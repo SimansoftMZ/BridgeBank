@@ -48,15 +48,33 @@ Para classificação e reconciliação baseadas em ML:
 dotnet add package Simansoft.BridgeBank.ML
 ```
 
-Para utilizar os pacotes via GitHub Packages, adicione o registo ao seu `nuget.config`:
+Para utilizar os pacotes via GitHub Packages, requer autenticação mesmo para pacotes públicos. Crie um [Personal Access Token (PAT)](https://github.com/settings/tokens) com o scope `read:packages` e registe a fonte:
+
+```bash
+dotnet nuget add source "https://nuget.pkg.github.com/SimansoftMZ/index.json" \
+  --name github-simansoftmz \
+  --username SEU_UTILIZADOR_GITHUB \
+  --password SEU_PAT \
+  --store-password-in-clear-text
+```
+
+Em alternativa, adicione o registo e credenciais ao seu `nuget.config`:
 
 ```xml
 <configuration>
   <packageSources>
     <add key="github-simansoftmz" value="https://nuget.pkg.github.com/SimansoftMZ/index.json" />
   </packageSources>
+  <packageSourceCredentials>
+    <github-simansoftmz>
+      <add key="Username" value="SEU_UTILIZADOR_GITHUB" />
+      <add key="ClearTextPassword" value="SEU_PAT" />
+    </github-simansoftmz>
+  </packageSourceCredentials>
 </configuration>
 ```
+
+> **Nota de segurança:** Não inclua o `nuget.config` com credenciais no controlo de versão — adicione-o ao `.gitignore`. Use variáveis de ambiente ou o comando `dotnet nuget add source` para gerir credenciais de forma segura.
 
 ### Docker (qualquer linguagem)
 
