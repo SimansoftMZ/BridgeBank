@@ -31,6 +31,7 @@
 
 ## Versão 0.6.0 (Próxima) 📋
 
+- [ ] Suporte extractos de POS
 - [ ] Leitores de extractos em PDF
 - [ ] Suporte para mais bancos moçambicanos:
   - [ ] Absa Bank
@@ -42,7 +43,6 @@
 ## Versão 0.7.0 (Futuro) 🔮
 
 - [ ] Suporte para bancos internacionais
-- [ ] Importação/Exportação em formatos OFX, QIF
 - [ ] Relatórios de reconciliação
 - [ ] Dashboard de análise
 - [ ] Detecção automática de taxas e comissões
@@ -50,7 +50,6 @@
 
 ## Versão 1.0.0 (Visão de Longo Prazo) 🌟
 
-- [ ] Reconciliação em tempo real
 - [ ] Integração com ERPs populares (Primavera, SAP Business One, Sage)
 - [ ] Aplicação mobile
 - [ ] Cloud hosting opcional

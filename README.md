@@ -3,7 +3,8 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/Simansoft.BridgeBank.Core)](https://www.nuget.org/packages/Simansoft.BridgeBank.Core)
-[![Docker](https://img.shields.io/docker/v/simansoft/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoftmz/bridgebank-api)
+[![Docker](https://img.shields.io/docker/v/simansoftmz/bridgebank-api?label=docker)](https://hub.docker.com/r/simansoftmz/bridgebank-api)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-NuGet%20%7C%20Docker-blue?logo=github)](https://github.com/orgs/SimansoftMZ/packages)
 
 O BridgeBank é um toolkit .NET de código aberto para reconciliação bancária em sistemas ERP. Oferece correspondência inteligente de transacções, classificação automática (baseada em regras e ML), leitura de extractos bancários e geração de ficheiros de pagamento para bancos moçambicanos e internacionais.
 
@@ -33,6 +34,8 @@ Disponível como **pacotes NuGet** para .NET, uma **API REST** (Docker) para qua
 
 ### Pacotes NuGet (.NET)
 
+Os pacotes estão disponíveis no [NuGet.org](https://www.nuget.org/packages?q=Simansoft.BridgeBank) e no [GitHub Packages](https://github.com/orgs/SimansoftMZ/packages):
+
 ```bash
 dotnet add package Simansoft.BridgeBank.Core
 dotnet add package Simansoft.BridgeBank.Parsers
@@ -45,11 +48,46 @@ Para classificação e reconciliação baseadas em ML:
 dotnet add package Simansoft.BridgeBank.ML
 ```
 
-### Docker (qualquer linguagem)
+Para utilizar os pacotes via GitHub Packages, requer autenticação mesmo para pacotes públicos. Crie um [Personal Access Token (PAT)](https://github.com/settings/tokens) com o scope `read:packages` e registe a fonte:
 
 ```bash
-docker pull simansoft/bridgebank-api
-docker run -p 8080:8080 simansoft/bridgebank-api
+dotnet nuget add source "https://nuget.pkg.github.com/SimansoftMZ/index.json" \
+  --name github-simansoftmz \
+  --username SEU_UTILIZADOR_GITHUB \
+  --password SEU_PAT \
+  --store-password-in-clear-text
+```
+
+Em alternativa, adicione o registo e credenciais ao seu `nuget.config`:
+
+```xml
+<configuration>
+  <packageSources>
+    <add key="github-simansoftmz" value="https://nuget.pkg.github.com/SimansoftMZ/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <github-simansoftmz>
+      <add key="Username" value="SEU_UTILIZADOR_GITHUB" />
+      <add key="ClearTextPassword" value="SEU_PAT" />
+    </github-simansoftmz>
+  </packageSourceCredentials>
+</configuration>
+```
+
+> **Nota de segurança:** Não inclua o `nuget.config` com credenciais no controlo de versão — adicione-o ao `.gitignore`. Use variáveis de ambiente ou o comando `dotnet nuget add source` para gerir credenciais de forma segura.
+
+### Docker (qualquer linguagem)
+
+A imagem Docker está disponível no [Docker Hub](https://hub.docker.com/r/simansoftmz/bridgebank-api) e no [GitHub Container Registry](https://github.com/SimansoftMZ/BridgeBank/pkgs/container/bridgebank-api):
+
+```bash
+# Via Docker Hub
+docker pull simansoftmz/bridgebank-api
+docker run -p 8080:8080 simansoftmz/bridgebank-api
+
+# Via GitHub Container Registry
+docker pull ghcr.io/simansoftmz/bridgebank-api
+docker run -p 8080:8080 ghcr.io/simansoftmz/bridgebank-api
 ```
 
 Ou com Docker Compose:

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build-and-test:
@@ -71,11 +72,18 @@ jobs:
             -p:PackageVersion=${{ steps.version.outputs.VERSION }} \
             --output ./nupkgs
 
-      - name: Push to NuGet
+      - name: Push to NuGet.org
         run: |
           dotnet nuget push ./nupkgs/*.nupkg \
             --api-key ${{ secrets.NUGET_API_PUBLISH_KEY }} \
             --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      - name: Push to GitHub Packages
+        run: |
+          dotnet nuget push ./nupkgs/*.nupkg \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --source https://nuget.pkg.github.com/SimansoftMZ/index.json \
             --skip-duplicate
 
   publish-docker:
@@ -100,6 +108,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -109,5 +124,7 @@ jobs:
           tags: |
             simansoftmz/bridgebank-api:${{ steps.version.outputs.VERSION }}
             simansoftmz/bridgebank-api:latest
+            ghcr.io/simansoftmz/bridgebank-api:${{ steps.version.outputs.VERSION }}
+            ghcr.io/simansoftmz/bridgebank-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
