@@ -78,7 +78,7 @@ Não há vulnerabilidades conhecidas no momento da última atualização. Consul
 - **Armazenamento** — Criptografe ficheiros de extracto em repouso (ex: AES-256)
 - **Transmissão** — Use HTTPS/TLS ao enviar extractos para a API
 - **Logs** — Não registre IBANs, números de contas ou valores sensíveis em logs
-- **Temporário** — Delete ficheiros extracto após processamento
+- **Temporário** — Delete ficheiros de extracto após processamento
 
 ### Números de Contas Bancárias
 
@@ -125,10 +125,28 @@ var allowedTypes = new[] { "application/vnd.ms-excel",
 if (!allowedTypes.Contains(file.ContentType))
     throw new InvalidOperationException("Tipo de ficheiro não permitido");
 
-// Validar conteúdo
-var extrato = leitor.LerExtrato(file.FileName);
-if (extrato?.Transacoes == null || !extrato.Transacoes.Any())
-    throw new InvalidOperationException("Extracto vazio ou inválido");
+// Validar conteúdo (guarde o upload num ficheiro temporário antes de processar)
+var extensaoOriginal = Path.GetExtension(file.FileName);
+var caminhoTemporario = Path.ChangeExtension(
+    Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+    extensaoOriginal);
+
+try
+{
+    await using (var stream = new FileStream(caminhoTemporario, FileMode.Create))
+    {
+        await file.CopyToAsync(stream);
+    }
+
+    var extrato = leitor.LerExtrato(caminhoTemporario);
+    if (extrato?.Transacoes == null || !extrato.Transacoes.Any())
+        throw new InvalidOperationException("Extracto vazio ou inválido");
+}
+finally
+{
+    if (File.Exists(caminhoTemporario))
+        File.Delete(caminhoTemporario);
+}
 ```
 
 ## Gestão de Dependências
@@ -164,7 +182,10 @@ Se utilizar a API REST, configure HTTPS obrigatório:
 
 ```csharp
 // Program.cs
-app.UseHsts(); // HTTP Strict-Transport-Security
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts(); // HTTP Strict-Transport-Security
+}
 app.UseHttpsRedirection();
 
 // Certificado SSL (produção)
@@ -196,24 +217,27 @@ using System.Text;
 
 public class CriptografiaDados
 {
-    public static string Encriptar(string dados, byte[] chave)
+    public static byte[] EncriptarAutenticado(string dados, byte[] chave)
     {
-        using var aes = Aes.Create();
-        aes.Key = chave;
-        aes.GenerateIV();
-        
-        using var encryptor = aes.CreateEncryptor();
-        using var ms = new MemoryStream();
-        ms.Write(aes.IV, 0, aes.IV.Length);
-        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-        {
-            cs.Write(Encoding.UTF8.GetBytes(dados));
-        }
-        
-        return Convert.ToBase64String(ms.ToArray());
+        var nonce = RandomNumberGenerator.GetBytes(12); // 96 bits para GCM
+        var textoPlano = Encoding.UTF8.GetBytes(dados);
+        var textoCifrado = new byte[textoPlano.Length];
+        var tag = new byte[16];
+
+        using var aes = new AesGcm(chave, tagSizeInBytes: 16);
+        aes.Encrypt(nonce, textoPlano, textoCifrado, tag);
+
+        var resultado = new byte[nonce.Length + tag.Length + textoCifrado.Length];
+        Buffer.BlockCopy(nonce, 0, resultado, 0, nonce.Length);
+        Buffer.BlockCopy(tag, 0, resultado, nonce.Length, tag.Length);
+        Buffer.BlockCopy(textoCifrado, 0, resultado, nonce.Length + tag.Length, textoCifrado.Length);
+
+        return resultado;
     }
 }
 ```
+
+**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração.
 
 ## Logs e Monitoramento
 

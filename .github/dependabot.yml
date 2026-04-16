@@ -24,10 +24,6 @@ updates:
     labels:
       - "dependencies"
       - "chore"
-    # Permitir apenas actualizações de dependências de desenvolvimento e indirectas
-    allow:
-      - dependency-type: "development"
-      - dependency-type: "indirect"
     # Ignorar versões pré-lançamento
     ignore:
       - dependency-name: "*"
@@ -35,27 +31,6 @@ updates:
     # Ativar commit signing se configurado
     commit-message:
       prefix: "chore(deps):"
-      include: "scope"
-
-  # Monitorar dependências Docker
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Africa/Maputo"
-    open-pull-requests-limit: 5
-    pull-request-branch-name:
-      separator: "/"
-    reviewers:
-      - "SimansoftMZ/maintainers"
-    labels:
-      - "dependencies"
-      - "docker"
-      - "chore"
-    commit-message:
-      prefix: "chore(docker):"
       include: "scope"
 
   # Monitorar imagem base da API
