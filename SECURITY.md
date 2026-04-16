@@ -126,7 +126,6 @@ if (!allowedTypes.Contains(file.ContentType))
     throw new InvalidOperationException("Tipo de ficheiro não permitido");
 
 // Validar conteúdo (guarde o upload num ficheiro temporário antes de processar)
-var caminhoTemporario = Path.GetTempFileName();
 var extensaoOriginal = Path.GetExtension(file.FileName);
 var extensoesPermitidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
@@ -136,9 +135,7 @@ var extensoesPermitidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 if (string.IsNullOrWhiteSpace(extensaoOriginal) || !extensoesPermitidas.Contains(extensaoOriginal))
     throw new InvalidOperationException("Extensão de ficheiro não permitida");
 
-var caminhoComExtensao = Path.ChangeExtension(caminhoTemporario, extensaoOriginal);
-File.Move(caminhoTemporario, caminhoComExtensao, overwrite: true);
-caminhoTemporario = caminhoComExtensao;
+var caminhoTemporario = Path.GetTempFileName();
 
 try
 {
@@ -256,7 +253,7 @@ public class CriptografiaDados
 }
 ```
 
-**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração. O nonce deve ser **único por chave**; em cenários de alto volume, prefira um esquema monotónico (contador) por chave para prevenir reutilização. Se usar AAD, preserve e forneça exactamente o mesmo valor durante a desencriptação.
+**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração. O nonce deve ser **único por chave**; em cenários de alto volume, prefira um esquema monotónico (contador) por chave para prevenir reutilização. Se usar AAD, preserve e forneça exactamente o mesmo valor durante a desencriptação. `AesGcm` requer .NET 6.0 ou superior.
 
 ## Logs e Monitoramento
 
