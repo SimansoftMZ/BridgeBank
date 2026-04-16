@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.7.6" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
   </ItemGroup>
 
 </Project>
