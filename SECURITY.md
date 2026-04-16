@@ -12,21 +12,11 @@ Se descobrir uma vulnerabilidade de segurança, **não abra uma issue pública n
 2. Clique em **"Report a vulnerability"**
 3. Descreva a vulnerabilidade com detalhes técnicos
 
-### Via Email (Segurança)
-
-Envie um email para a equipa de segurança do projecto com:
-
-- Descrição clara da vulnerabilidade
-- Passos para reproduzir
-- Impacto potencial
-- Versões afectadas
-- Sugestões de correcção (se possível)
-
 **A segurança é uma prioridade — as vulnerabilidades reportadas serão tratadas com urgência.**
 
 ## Processo de Divulgação
 
-1. **Recepção:** Acknowledgeamos a recepção do relatório dentro de 48 horas
+1. **Recepção:** Confirmamos a recepção do relatório dentro de 48 horas
 2. **Avaliação:** A equipa avalia a vulnerabilidade e o seu impacto
 3. **Correcção:** Desenvolvemos uma correcção em segredo numa branch privada
 4. **Teste:** A correcção é validada e testada completamente
@@ -64,7 +54,7 @@ Se contribuir para o projecto:
 
 - **Não envie segredos** — Revise seus commits antes de push; evite expor chaves, tokens ou dados sensíveis
 - **Testes de segurança** — Teste casos extremos e entrada malformada
-- **Dependências** — Use versões knowns de bibliotecas; revise `csproj` para dependências desatualizadas
+- **Dependências** — Use versões conhecidas de bibliotecas; revise `csproj` para dependências desatualizadas
 - **Code review** — Aceite feedback crítico sobre segurança
 
 ## Responsabilidades de Segurança do Projecto
@@ -273,7 +263,7 @@ public class LogAuditoria
 Se o seu sistema processa dados pessoais (ex: NUIT, nomes), cumpra:
 
 - **LEI MOÇAMBICANA DE PROTEÇÃO DE DADOS** (se aplicável)
-- **RGPD** (se utilizadores da EU)
+- **RGPD** (se utilizadores da UE)
 - **PCI DSS** (se processar dados de cartão)
 
 ### Conformidade Bancária
@@ -292,20 +282,19 @@ Subscreva notificações de segurança:
 
 1. **GitHub:** [Watch Releases](https://github.com/SimansoftMZ/BridgeBank/releases) — selecione "Releases only"
 2. **NuGet:** Alertas automáticos para pacotes desatualizados
-3. **Email:** (Quando disponível) Inscreva-se na mailing list de segurança
+3. **GitHub Security Advisory:** Subscreva actualizações de advisories de segurança do repositório
 
 ## Contacto de Segurança
 
-Para questões de segurança confidenciais, entre em contacto com:
+Para questões de segurança confidenciais, utilize:
 
-- **Email:** [segurança do projecto]  
 - **GitHub Security Advisory:** [Reportar via GitHub](https://github.com/SimansoftMZ/BridgeBank/security/advisories)
 
 ## Histórico de Versões de Segurança
 
 | Versão | Assunto | Data |
 |--------|---------|------|
-| 1.0.0+ | Versão inicial | [data] |
+| 1.0.0+ | Versão inicial | 2026-04-16 |
 
 *(Atualizaremos conforme novas versões forem lançadas)*
 

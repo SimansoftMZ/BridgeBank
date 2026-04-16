@@ -13,10 +13,9 @@ updates:
       timezone: "Africa/Maputo"
     # Agrupar atualizações para reduzir número de PRs
     groups:
-      dependency-type:
+      dependencias-nuget:
         patterns:
-          - "dependency-type:production"
-          - "dependency-type:development"
+          - "*"
     open-pull-requests-limit: 10
     pull-request-branch-name:
       separator: "/"
@@ -25,7 +24,7 @@ updates:
     labels:
       - "dependencies"
       - "chore"
-    # Auto-merge para patches e minor versions
+    # Permitir apenas actualizações de dependências de desenvolvimento e indirectas
     allow:
       - dependency-type: "development"
       - dependency-type: "indirect"
@@ -41,6 +40,27 @@ updates:
   # Monitorar dependências Docker
   - package-ecosystem: "docker"
     directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Africa/Maputo"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "chore"
+    commit-message:
+      prefix: "chore(docker):"
+      include: "scope"
+
+  # Monitorar imagem base da API
+  - package-ecosystem: "docker"
+    directory: "/src/BridgeBank.Api"
     schedule:
       interval: "weekly"
       day: "monday"
