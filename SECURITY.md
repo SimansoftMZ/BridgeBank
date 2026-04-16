@@ -128,6 +128,14 @@ if (!allowedTypes.Contains(file.ContentType))
 // Validar conteúdo (guarde o upload num ficheiro temporário antes de processar)
 var caminhoTemporario = Path.GetTempFileName();
 var extensaoOriginal = Path.GetExtension(file.FileName);
+var extensoesPermitidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    ".xlsx", ".xls", ".json"
+};
+
+if (string.IsNullOrWhiteSpace(extensaoOriginal) || !extensoesPermitidas.Contains(extensaoOriginal))
+    throw new InvalidOperationException("Extensão de ficheiro não permitida");
+
 if (!string.IsNullOrWhiteSpace(extensaoOriginal))
 {
     var caminhoComExtensao = Path.ChangeExtension(caminhoTemporario, extensaoOriginal);
@@ -236,9 +244,10 @@ public class CriptografiaDados
         var textoPlano = Encoding.UTF8.GetBytes(dados);
         var textoCifrado = new byte[textoPlano.Length];
         var tag = new byte[16];
+        var dadosAssociados = Encoding.UTF8.GetBytes("contexto:bridgebank"); // AAD opcional
 
         using var aes = new AesGcm(chave, tagSizeInBytes: 16);
-        aes.Encrypt(nonce, textoPlano, textoCifrado, tag);
+        aes.Encrypt(nonce, textoPlano, textoCifrado, tag, dadosAssociados);
 
         var resultado = new byte[nonce.Length + tag.Length + textoCifrado.Length];
         Buffer.BlockCopy(nonce, 0, resultado, 0, nonce.Length);
@@ -250,7 +259,7 @@ public class CriptografiaDados
 }
 ```
 
-**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração. O nonce deve ser **único por chave**; em cenários de alto volume, prefira um esquema monotónico (contador) por chave para prevenir reutilização.
+**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração. O nonce deve ser **único por chave**; em cenários de alto volume, prefira um esquema monotónico (contador) por chave para prevenir reutilização. Se usar AAD, preserve e forneça exactamente o mesmo valor durante a desencriptação.
 
 ## Logs e Monitoramento
 
