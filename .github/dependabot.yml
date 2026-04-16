@@ -1,0 +1,81 @@
+# Configuração do Dependabot
+# Documentação: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Monitorar dependências NuGet (.NET)
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Africa/Maputo"
+    # Agrupar atualizações para reduzir número de PRs
+    groups:
+      dependency-type:
+        patterns:
+          - "dependency-type:production"
+          - "dependency-type:development"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "chore"
+    # Auto-merge para patches e minor versions
+    allow:
+      - dependency-type: "development"
+      - dependency-type: "indirect"
+    # Ignorar versões pré-lançamento
+    ignore:
+      - dependency-name: "*"
+        versions: ["*-*"]
+    # Ativar commit signing se configurado
+    commit-message:
+      prefix: "chore(deps):"
+      include: "scope"
+
+  # Monitorar dependências Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Africa/Maputo"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "chore"
+    commit-message:
+      prefix: "chore(docker):"
+      include: "scope"
+
+  # Monitorar GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Africa/Maputo"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "chore"
+    commit-message:
+      prefix: "chore(actions):"
+      include: "scope"
