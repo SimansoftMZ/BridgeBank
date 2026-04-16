@@ -126,10 +126,14 @@ if (!allowedTypes.Contains(file.ContentType))
     throw new InvalidOperationException("Tipo de ficheiro não permitido");
 
 // Validar conteúdo (guarde o upload num ficheiro temporário antes de processar)
+var caminhoTemporario = Path.GetTempFileName();
 var extensaoOriginal = Path.GetExtension(file.FileName);
-var caminhoTemporario = Path.ChangeExtension(
-    Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
-    extensaoOriginal);
+if (!string.IsNullOrWhiteSpace(extensaoOriginal))
+{
+    var caminhoComExtensao = Path.ChangeExtension(caminhoTemporario, extensaoOriginal);
+    File.Move(caminhoTemporario, caminhoComExtensao, overwrite: true);
+    caminhoTemporario = caminhoComExtensao;
+}
 
 try
 {
@@ -217,8 +221,17 @@ using System.Text;
 
 public class CriptografiaDados
 {
+    /// <summary>
+    /// Encripta dados com AES-GCM e devolve nonce (12 bytes) + tag (16 bytes) + texto cifrado.
+    /// </summary>
+    /// <param name="dados">Texto em claro a encriptar.</param>
+    /// <param name="chave">Chave AES de 16, 24 ou 32 bytes.</param>
+    /// <returns>Buffer concatenado no formato nonce + tag + texto cifrado.</returns>
     public static byte[] EncriptarAutenticado(string dados, byte[] chave)
     {
+        if (chave is null || (chave.Length != 16 && chave.Length != 24 && chave.Length != 32))
+            throw new ArgumentException("A chave deve ter 16, 24 ou 32 bytes.", nameof(chave));
+
         var nonce = RandomNumberGenerator.GetBytes(12); // 96 bits para GCM
         var textoPlano = Encoding.UTF8.GetBytes(dados);
         var textoCifrado = new byte[textoPlano.Length];
@@ -237,7 +250,7 @@ public class CriptografiaDados
 }
 ```
 
-**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração.
+**Nota:** Guarde e rote chaves criptográficas num cofre seguro (ex: Azure Key Vault, AWS KMS ou DPAPI), em vez de embutir chaves no código ou ficheiros de configuração. O nonce deve ser **único por chave**; em cenários de alto volume, prefira um esquema monotónico (contador) por chave para prevenir reutilização.
 
 ## Logs e Monitoramento
 
