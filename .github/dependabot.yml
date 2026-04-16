@@ -1,0 +1,76 @@
+# Configuração do Dependabot
+# Documentação: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Monitorar dependências NuGet (.NET)
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Africa/Maputo"
+    # Agrupar atualizações para reduzir número de PRs
+    groups:
+      dependencias-nuget:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "chore"
+    # Ignorar versões pré-lançamento
+    ignore:
+      - dependency-name: "*"
+        versions: ["*-*"]
+    # Em NuGet, include: scope adiciona o nome da dependência no commit message
+    commit-message:
+      prefix: "chore(deps):"
+      include: "scope"
+
+  # Monitorar imagem base da API
+  - package-ecosystem: "docker"
+    directory: "/src/BridgeBank.Api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Africa/Maputo"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "chore"
+    commit-message:
+      prefix: "chore(docker):"
+      include: "scope"
+
+  # Monitorar GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Africa/Maputo"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "SimansoftMZ/maintainers"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "chore"
+    commit-message:
+      prefix: "chore(actions):"
+      include: "scope"
