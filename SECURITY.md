@@ -136,12 +136,9 @@ var extensoesPermitidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 if (string.IsNullOrWhiteSpace(extensaoOriginal) || !extensoesPermitidas.Contains(extensaoOriginal))
     throw new InvalidOperationException("Extensão de ficheiro não permitida");
 
-if (!string.IsNullOrWhiteSpace(extensaoOriginal))
-{
-    var caminhoComExtensao = Path.ChangeExtension(caminhoTemporario, extensaoOriginal);
-    File.Move(caminhoTemporario, caminhoComExtensao, overwrite: true);
-    caminhoTemporario = caminhoComExtensao;
-}
+var caminhoComExtensao = Path.ChangeExtension(caminhoTemporario, extensaoOriginal);
+File.Move(caminhoTemporario, caminhoComExtensao, overwrite: true);
+caminhoTemporario = caminhoComExtensao;
 
 try
 {
@@ -234,8 +231,9 @@ public class CriptografiaDados
     /// </summary>
     /// <param name="dados">Texto em claro a encriptar.</param>
     /// <param name="chave">Chave AES de 16, 24 ou 32 bytes.</param>
+    /// <param name="dadosAssociados">AAD opcional; deve ser exactamente o mesmo na desencriptação.</param>
     /// <returns>Buffer concatenado no formato nonce + tag + texto cifrado.</returns>
-    public static byte[] EncriptarAutenticado(string dados, byte[] chave)
+    public static byte[] EncriptarAutenticado(string dados, byte[] chave, byte[]? dadosAssociados = null)
     {
         if (chave is null || (chave.Length != 16 && chave.Length != 24 && chave.Length != 32))
             throw new ArgumentException("A chave deve ter 16, 24 ou 32 bytes.", nameof(chave));
@@ -244,7 +242,6 @@ public class CriptografiaDados
         var textoPlano = Encoding.UTF8.GetBytes(dados);
         var textoCifrado = new byte[textoPlano.Length];
         var tag = new byte[16];
-        var dadosAssociados = Encoding.UTF8.GetBytes("contexto:bridgebank"); // AAD opcional
 
         using var aes = new AesGcm(chave, tagSizeInBytes: 16);
         aes.Encrypt(nonce, textoPlano, textoCifrado, tag, dadosAssociados);

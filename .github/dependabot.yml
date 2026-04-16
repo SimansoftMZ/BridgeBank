@@ -28,7 +28,7 @@ updates:
     ignore:
       - dependency-name: "*"
         versions: ["*-*"]
-    # Ativar commit signing se configurado
+    # Em NuGet, include: scope adiciona o nome da dependência no commit message
     commit-message:
       prefix: "chore(deps):"
       include: "scope"
