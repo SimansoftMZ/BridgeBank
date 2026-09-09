@@ -1,6 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Tasks.Git" Version="10.0.401">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\BridgeBank.Core\BridgeBank.Core.csproj" />
     <ProjectReference Include="..\..\src\BridgeBank.Parsers\BridgeBank.Parsers.csproj" />
     <ProjectReference Include="..\..\src\BridgeBank.Generators\BridgeBank.Generators.csproj" />
