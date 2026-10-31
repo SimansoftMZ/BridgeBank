@@ -95,3 +95,6 @@ ClientBin/
 orleans.codegen.cs
 
 .fake
+
+# Code coverage output
+coverage/
