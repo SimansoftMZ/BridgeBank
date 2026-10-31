@@ -33,11 +33,25 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+        run: >
+          dotnet test --no-build --configuration Release --verbosity normal
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
+          --results-directory ./coverage
+
+      - name: Merge coverage reports
+        run: >
+          dotnet tool run reportgenerator
+          -reports:"coverage/*/coverage.cobertura.xml"
+          -targetdir:"coverage/report"
+          -reporttypes:Cobertura
 
       - name: Upload test results
         uses: actions/upload-artifact@v7
@@ -46,3 +60,32 @@ jobs:
           name: test-results
           path: "**/test-results.trx"
           retention-days: 7
+
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-csharp
+          path: coverage/report/Cobertura.xml
+          retention-days: 7
+
+  upload-coverage-csharp:
+    name: Upload Coverage (C#)
+    needs: build-and-test
+    if: ${{ !cancelled() && needs.build-and-test.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      code-quality: write
+
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-report-csharp
+
+      - uses: actions/upload-code-coverage@v1
+        with:
+          file: Cobertura.xml
+          language: C#
+          label: code-coverage-agent
